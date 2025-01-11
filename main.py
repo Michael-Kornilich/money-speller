@@ -1,7 +1,6 @@
 # i.e. 2.013.777,34 -> f(x) -> two million thirteen thousand seven hundred seventy-seven and thirty-four
 from typing import Dict, List
 from itertools import batched
-import sys
 
 NUM_NAMES: Dict[int, str] = {
     # 0: '',
@@ -113,12 +112,13 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
     return " ".join(text).capitalize()
 
 
-print(number_speller(145214, POWER_NAMES, NUM_NAMES))
+# print(number_speller(145214, POWER_NAMES, NUM_NAMES))
 
-# try:
-#     n = float(sys.argv[1])
-# except ValueError:
-#     raise ValueError("The |num| must and be an integer smaller than 1e27")
-#
-# if int(n) == n:
-#     print(number_speller(int(n), POWER_NAMES, NUM_NAMES))
+while True:
+    try:
+        n = int(input("Enter an integer between -10^27 and 10^27 (float numbers will be truncated): "))
+        break
+    except ValueError:
+        print("The input is invalid")
+
+print("\n" + number_speller(n, POWER_NAMES, NUM_NAMES))
