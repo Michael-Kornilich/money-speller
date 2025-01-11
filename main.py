@@ -91,8 +91,7 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
 
     for power, value in num_dict.items():
         if value < 21:
-            text.append(num_names.get(value, ""))
-            text.append(power_names.get(power, ""))
+            text.extend([num_names[value], power_names.get(power, "")])
             continue
 
         broken_value = break_down(value, 1)
@@ -100,8 +99,11 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
         if broken_value.get(2):
             text.extend([num_names[broken_value[2]], power_names[2]])
 
-        if broken_value.get(1):
-            text.append(num_names[broken_value.get(1, 0) * 10])
+        if broken_value.get(1, 0) * 10 + broken_value.get(0, 0) < 21:
+            text.append(num_names[broken_value.get(1, 0) * 10 + broken_value.get(0, 0)])
+            continue
+
+        text.append(num_names[broken_value[1] * 10])
 
         if broken_value.get(0):
             text.append(num_names[broken_value[0]])
