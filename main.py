@@ -107,7 +107,7 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
 
         if broken_value.get(0):
             text.append(num_names[broken_value[0]])
-g
+
         text.append(power_names.get(power, ""))
 
     return " ".join(text).capitalize()
