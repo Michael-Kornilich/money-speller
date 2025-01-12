@@ -113,6 +113,7 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
 
 
 # print(number_speller(145214, POWER_NAMES, NUM_NAMES))
+print("This script spells a number between -10^27 and 10^27\n")
 
 while True:
     try:
