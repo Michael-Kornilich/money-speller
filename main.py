@@ -81,38 +81,36 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
         raise ValueError("The |num| must and be an integer smaller than 1e27")
 
     text: List[str] = []
-
-    if num < 0:
-        text.append("minus")
-        num = abs(num)
-
-    num_dict: Dict[int, int] = break_down(num, 3)
+    num_dict: Dict[int, int] = break_down(abs(num), 3)
 
     for power, value in num_dict.items():
         if value < 21:
-            text.extend([num_names[value], power_names.get(power, "")])
-            continue
+            text.append(num_names.get(value, ""))
+        else:
+            broken_value = break_down(value, 1)
 
-        broken_value = break_down(value, 1)
+            if v := broken_value.get(2):
+                text.extend([num_names[v], power_names[2]])
 
-        if broken_value.get(2):
-            text.extend([num_names[broken_value[2]], power_names[2]])
-
-        if broken_value.get(1, 0) * 10 + broken_value.get(0, 0) < 21:
-            text.append(num_names[broken_value.get(1, 0) * 10 + broken_value.get(0, 0)])
-            continue
-
-        text.append(num_names[broken_value[1] * 10])
-
-        if broken_value.get(0):
-            text.append(num_names[broken_value[0]])
+            if (v := broken_value.get(1, 0) * 10 + broken_value.get(0, 0)) < 21:
+                text.append(num_names.get(v, ""))
+            else:
+                text.append(num_names.get(broken_value[1] * 10, ""))
+                text.append(num_names.get(broken_value[0], ""))
 
         text.append(power_names.get(power, ""))
 
-    return " ".join(text).capitalize()
+    if num < 0:
+        text.insert(0, "minus")
+
+    return " ".join([item for item in text if item]).capitalize()
 
 
-# print(number_speller(145214, POWER_NAMES, NUM_NAMES))
+# print(break_down(500, 1))
+print(number_speller(12345, POWER_NAMES, NUM_NAMES))
+
+quit()
+
 print("This script spells a number between -10^27 and 10^27\n")
 
 while True:
