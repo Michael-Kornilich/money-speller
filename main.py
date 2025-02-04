@@ -107,16 +107,17 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
 
 
 # print(break_down(500, 1))
-print(number_speller(12345, POWER_NAMES, NUM_NAMES))
+# print(number_speller(12345, POWER_NAMES, NUM_NAMES))
 
-quit()
+# quit()
 
 print("This script spells a number between -10^27 and 10^27\n")
 
-while True:
+n: int = None
+
+while not n:
     try:
         n = int(input("Enter an integer between -10^27 and 10^27 (float numbers will be truncated): "))
-        break
     except ValueError:
         print("The input is invalid")
 
