@@ -1,6 +1,7 @@
-# i.e. 2.013.777,34 -> f(x) -> two million thirteen thousand seven hundred seventy-seven and thirty-four
 from typing import Dict, List
 from itertools import batched
+import cmd
+
 
 NUM_NAMES: Dict[int, str] = {
     # 0: '',
@@ -106,19 +107,40 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
     return " ".join([item for item in text if item]).capitalize()
 
 
-# print(break_down(500, 1))
-# print(number_speller(12345, POWER_NAMES, NUM_NAMES))
+class Shell(cmd.Cmd):
+    prompt = "> "
+    intro = """
+This script spells every integer between -10^27 and 10^27.
+(Floating point numbers will be truncated)
 
-# quit()
+Available functions:
+    - spell: spells number(s)
+    - exit: exits the script
 
-print("This script spells a number between -10^27 and 10^27\n")
+    """
 
-n: int = None
+    def do_spell(self, nums):
+        """
+spell <number> ... <number>
 
-while not n:
-    try:
-        n = int(input("Enter an integer between -10^27 and 10^27 (float numbers will be truncated): "))
-    except ValueError:
-        print("The input is invalid")
+Spells the numbers passed to it. 
+Floating point numbers will be truncated.
+To simplify the input the usage of '_' or '.' is permitted.
+        """
+        nums = nums.replace(".", "").split(" ")
+        for num in nums:
+            # guard clause
+            try:
+                num = int(num)
+            except ValueError:
+                print(f"- '{num}' is an invalid input.")
+                continue
 
-print("\n" + number_speller(n, POWER_NAMES, NUM_NAMES))
+            print("- ",number_speller(num, POWER_NAMES, NUM_NAMES))
+
+    def do_exit(self, *args):
+        return 1
+
+
+if __name__ == "__main__":
+    Shell().cmdloop()
