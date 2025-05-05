@@ -52,7 +52,7 @@ def break_down(num: int, denominator: int) -> Dict[int, int]:
     Denominator determines the step of powers.\n
     The first power is always 0
     """
-    if (type(denominator) is not int) or (denominator < 1):
+    if (not isinstance(denominator, int)) or (denominator < 1):
         raise ValueError("The denominator must and be a positive integer")
 
     if (
@@ -78,7 +78,7 @@ def break_down(num: int, denominator: int) -> Dict[int, int]:
 
 
 def number_speller(num: int, power_names: dict, num_names: dict) -> str:
-    if (type(num) is not int) or abs(num) > 10 ** 27:
+    if (not isinstance(num, int)) or abs(num) > 10 ** 27:
         raise ValueError("The |num| must and be an integer smaller than 1e27")
 
     text: List[str] = []
