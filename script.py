@@ -1,5 +1,4 @@
 from typing import Dict, List, Iterable
-import cmd
 
 # TODO
 # test the app extensively
@@ -127,59 +126,29 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
     num_dict: Dict[int, int] = break_down(abs(num), 3)
 
     for power, value in num_dict.items():
-        if value < 21:
-            text.append(num_names.get(value, ""))
+        if not value: continue
+
+        broken_value = break_down(value, 1)
+
+        # extracting 100s
+        if assemble(broken_value) >= 100:
+            hundreds = broken_value[2]
+            text.extend([num_names[hundreds], power_names[2]])
+            broken_value.pop(2)
+
+        # extracting 10s
+        if 21 <= assemble(broken_value) <= 99:
+            text.append(num_names[broken_value[1] * 10])
+            # 0s are not in the NUM_NAMES, so raw indexing might error out
+            text.append(num_names.get(broken_value[0], ""))
+
+        # special 0-20
         else:
-            broken_value = break_down(value, 1)
+            v = assemble(broken_value)
+            # 0s are not in the NUM_NAMES, so raw indexing might error out
+            text.append(num_names.get(v, ""))
 
-            if v := broken_value.get(2):
-                text.extend([num_names[v], power_names[2]])
-
-            if (v := broken_value.get(1, 0) * 10 + broken_value.get(0, 0)) < 21:
-                text.append(num_names.get(v, ""))
-            else:
-                text.append(num_names.get(broken_value[1] * 10, ""))
-                text.append(num_names.get(broken_value[0], ""))
-
+        # powers 0, 1 are not in the POWER_NAMES
         text.append(power_names.get(power, ""))
 
     return " ".join([item for item in text if item]).capitalize()
-
-
-class Shell(cmd.Cmd):
-    prompt = "> "
-    intro = """
-This script spells every integer between -10^27 and 10^27.
-(Floating point numbers will be truncated)
-
-Available functions:
-    - spell: spells number(s)
-    - exit: exits the script
-
-    """
-
-    def do_spell(self, nums):
-        """
-spell <number> ... <number>
-
-Spells the numbers passed to it. 
-Floating point numbers will be truncated.
-To simplify the input, the usage of '_' or ',' is permitted.
-        """
-        nums = nums.replace(",", "").split(" ")
-        for num in nums:
-            # guard clause
-            try:
-                num = int(num)
-            except ValueError:
-                print(f"-> '{num}' is an invalid input.")
-                continue
-
-            print("-> ", number_speller(num, POWER_NAMES, NUM_NAMES))
-
-    def do_exit(self, *args):
-        return 1
-
-
-if __name__ == "__main__":
-    Shell().cmdloop()

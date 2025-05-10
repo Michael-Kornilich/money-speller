@@ -1,6 +1,6 @@
 import unittest
 from random import randint
-from main import *
+from script import *
 
 
 class FunctionTests(unittest.TestCase):
