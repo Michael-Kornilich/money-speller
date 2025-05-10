@@ -1,0 +1,5 @@
+            - name: Coverage Badge
+  # You may pin to the exact commit or the version.
+  # uses: we-cli/coverage-badge-action@8f6b0bd1b727cde6212c8c62d3329c4aac09fec3
+  uses: we-cli/coverage-badge-action@v1.0.1
+          
