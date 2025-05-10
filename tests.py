@@ -20,6 +20,18 @@ class Tests(unittest.TestCase):
     def test_speller_string_type(self):
         self.assertRaises(TypeError, number_speller, num="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
 
+    def test_speller_predefined(self):
+        predefined_inputs = {
+            0: "",
+            -1: "Minus one",
+            14: "Fourteen",
+            345_001_000: "Three hundred forty five million one thousand",
+            1_000_001: "One million one",
+            901_001_437_010: "Nine hundred one billion one million four hundred thirty seven thousand ten",
+            -123_123: "Minus one hundred twenty three thousand one hundred twenty three"
+        }
+        for num, expected in predefined_inputs.items():
+            self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
 
     # 1_234_567_8910 -> ignore _
     # 1,234,234,345.50 -> treat as integer
@@ -83,11 +95,11 @@ class Tests(unittest.TestCase):
 
     # testing both at the same time
     def test_random_num_denom(self):
-        for i in range(10_000):
+        for i in range(100_000):
             denominator = randint(1, 20)
             num = randint(1, 10 ** 27)
             result = break_down(num=num, denominator=denominator)
-
+a
             got = 0
             for power, value in result.items():
                 got += (10 ** power) * value

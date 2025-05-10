@@ -82,7 +82,7 @@ def break_down(num: int, denominator: int) -> Dict[int, int]:
 
 def number_speller(num: int, power_names: dict, num_names: dict) -> str:
     if not isinstance(num, int): raise TypeError(f"The num must be an integer, got {type(num)}")
-    if abs(num) > 10 ** 27: raise ValueError("The num must be than 1e27")
+    if abs(num) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
 
     text: List[str] = []
     num_dict: Dict[int, int] = break_down(abs(num), 3)
@@ -128,9 +128,9 @@ spell <number> ... <number>
 
 Spells the numbers passed to it. 
 Floating point numbers will be truncated.
-To simplify the input the usage of '_' or '.' is permitted.
+To simplify the input, the usage of '_' or ',' is permitted.
         """
-        nums = nums.replace(".", "").split(" ")
+        nums = nums.replace(",", "").split(" ")
         for num in nums:
             # guard clause
             try:
