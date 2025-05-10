@@ -136,10 +136,10 @@ To simplify the input, the usage of '_' or ',' is permitted.
             try:
                 num = int(num)
             except ValueError:
-                print(f"- '{num}' is an invalid input.")
+                print(f"-> '{num}' is an invalid input.")
                 continue
 
-            print("- ", number_speller(num, POWER_NAMES, NUM_NAMES))
+            print("-> ", number_speller(num, POWER_NAMES, NUM_NAMES))
 
     def do_exit(self, *args):
         return 1

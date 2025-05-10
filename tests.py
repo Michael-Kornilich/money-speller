@@ -99,7 +99,7 @@ class Tests(unittest.TestCase):
             denominator = randint(1, 20)
             num = randint(1, 10 ** 27)
             result = break_down(num=num, denominator=denominator)
-a
+
             got = 0
             for power, value in result.items():
                 got += (10 ** power) * value
