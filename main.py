@@ -1,7 +1,6 @@
-from typing import Dict, List
+from typing import Dict, List, Iterable
 from itertools import batched
 import cmd
-
 
 NUM_NAMES: Dict[int, str] = {
     # 0: '',
@@ -46,40 +45,44 @@ POWER_NAMES: Dict[int, str] = {
 }
 
 
+def batched_backwards(iterable: Iterable, n: int, *, strict=False) -> Iterable:
+    """
+    Same functionality as batched(), but starts the iteration from the back.
+    I.E. batched_backwards("hello world", 3) -> "rld", " wo", "llo", "he"
+    """
+    iter_ = iterable[::-1]
+    for i in batched(iter_, n, strict=strict): yield i[::-1]
+
+
 def break_down(num: int, denominator: int) -> Dict[int, int]:
     """
     Breaks down a positive integer into {power of 10 : integer}\n
     Denominator determines the step of powers.\n
-    The first power is always 0
+    The first power is always 0. Floats are truncated.
     """
-    if (not isinstance(denominator, int)) or (denominator < 1):
-        raise ValueError("The denominator must and be a positive integer")
+    if not isinstance(denominator, int): raise TypeError(f"The denominator must be an integer, got {type(denominator)}")
+    if not denominator >= 1: raise ValueError("The denominator must and be >= 1")
 
-    if (
-            (type(num) in [float, int]) and
-            (num >= 0) and
-            (int(num) == num)
-    ):
-        num = int(num)
+    if not isinstance(num, (float, int)): raise TypeError(f"The num must be an integer, got {type(num)}")
+    if not num >= 0: raise ValueError(f"The num must be >= 0, got {num}")
+    if not int(num) == num: raise ValueError(f"The num must be an integer or a float with no decimals, got {num}")
 
-        broken_num: dict = {0: 0}
-        str_num: str = str(num)[::-1]
+    num = int(num)
 
-        for power, i in enumerate(batched(str_num, denominator)):
-            num_chunk: int = int(''.join(i)[::-1])
+    broken_num: dict = {0: 0}
+    str_num: str = str(num)
 
-            if not num_chunk: continue
-
+    for power, i in enumerate(batched_backwards(str_num, denominator)):
+        num_chunk: int = int("".join(i))
+        if num_chunk:
             broken_num.update({power * denominator: num_chunk})
 
-        return dict(reversed(list(broken_num.items())))
-    else:
-        raise ValueError("The num must be a positive integer or zero")
+    return dict(reversed(list(broken_num.items())))
 
 
 def number_speller(num: int, power_names: dict, num_names: dict) -> str:
-    if (not isinstance(num, int)) or abs(num) > 10 ** 27:
-        raise ValueError("The |num| must and be an integer smaller than 1e27")
+    if not isinstance(num, int): raise TypeError(f"The num must be an integer, got {type(num)}")
+    if abs(num) > 10 ** 27: raise ValueError("The num must be than 1e27")
 
     text: List[str] = []
     num_dict: Dict[int, int] = break_down(abs(num), 3)
@@ -136,7 +139,7 @@ To simplify the input the usage of '_' or '.' is permitted.
                 print(f"- '{num}' is an invalid input.")
                 continue
 
-            print("- ",number_speller(num, POWER_NAMES, NUM_NAMES))
+            print("- ", number_speller(num, POWER_NAMES, NUM_NAMES))
 
     def do_exit(self, *args):
         return 1
