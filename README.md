@@ -19,5 +19,5 @@ In order to successfully run the script you have to have a valid `3.8+` Python v
 
 Run by:
 1. Cloning the repository
-2. Launching the `main.py` file in terminal
+2. Launching the `run.py` file in terminal
 3. Follow the instuctions in the terminal or consult the **Description** part of the document
