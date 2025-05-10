@@ -15,7 +15,7 @@ Applications
 
 Usage
 ---
-In order to successfully run the script you have to have a valid `3.12+` Python version.
+In order to successfully run the script you have to have a valid `3.8+` Python version.
 
 Run by:
 1. Cloning the repository
