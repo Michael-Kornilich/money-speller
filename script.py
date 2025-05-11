@@ -1,4 +1,5 @@
-from typing import Dict, List, Iterable
+from typing import Dict, List, Iterable, Tuple
+from math import modf
 
 # TODO
 # test the number speller and the parser extensively
@@ -115,9 +116,22 @@ def assemble(broken_value: Dict[int, int], /) -> int:
     return res
 
 
-def number_speller(num: int, power_names: dict, num_names: dict) -> str:
-    if not isinstance(num, int): raise TypeError(f"The num must be an integer, got {type(num)}")
-    if abs(num) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
+def split_decimal(num: int) -> tuple[int, int]:
+    """
+    Separates any number into the integer and decimal part
+    """
+    if num - int(num) != 0:
+        int_, dec = str(num).split(".")
+    else:
+        int_, dec = num, 0
+    return int(int_), int(dec)
+
+
+def number_speller(number: int, *, power_names: dict, num_names: dict, capitalize: bool = True) -> str:
+    if not isinstance(number, (float, int)): raise TypeError(f"The num must be an integer, got {type(number)}")
+    if abs(number) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
+
+    num, decimal = split_decimal(number)
 
     if num < 0:
         text: List[str] = ["minus"]
@@ -152,4 +166,24 @@ def number_speller(num: int, power_names: dict, num_names: dict) -> str:
         # powers 0, 1 are not in the POWER_NAMES
         text.append(power_names.get(power, ""))
 
-    return " ".join([item for item in text if item]).capitalize()
+    # handling decimals
+    decimal_spelled = ""
+    if decimal:
+        biggest_dec_power = max(break_down(decimal, 1).keys())
+
+        dec_name = number_speller(
+            10 ** biggest_dec_power,
+            power_names=POWER_NAMES,
+            num_names=NUM_NAMES,
+            capitalize=False
+        ) + "th"
+
+        decimal_spelled = (
+                "and " +
+                number_speller(decimal, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False)
+                + " "
+                + dec_name
+        )
+
+    return_text = (" ".join([item for item in text if item]) + " " + decimal_spelled).strip()
+    return return_text.capitalize() if capitalize else return_text
