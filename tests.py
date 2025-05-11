@@ -1,6 +1,7 @@
 import unittest
 from random import randint
 from script import *
+from run import Shell
 
 
 class FunctionTests(unittest.TestCase):
@@ -76,7 +77,8 @@ class FunctionTests(unittest.TestCase):
             345_001_000: "Three hundred forty five million one thousand",
             1_000_001: "One million one",
             901_001_437_010: "Nine hundred one billion one million four hundred thirty seven thousand ten",
-            -123_123: "Minus one hundred twenty three thousand one hundred twenty three"
+            -123_123: "Minus one hundred twenty three thousand one hundred twenty three",
+            12_000_013: "Twelve million thirteen"
         }
         for num, expected in predefined_inputs.items():
             self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
@@ -153,6 +155,11 @@ class FunctionTests(unittest.TestCase):
                 got += (10 ** power) * value
 
             self.assertEqual(num, got)
+
+
+class ApplicationTests(unittest.TestCase):
+    def test_parser(self):
+        Shell().do_spell("123")
 
 
 if __name__ == '__main__':

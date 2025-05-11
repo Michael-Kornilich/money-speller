@@ -1,14 +1,15 @@
 from typing import Dict, List, Iterable
 
 # TODO
-# test the app extensively
+# test the number speller and the parser extensively
 # add float spelling
 # add money spelling
 # add a csv with
 # name, currency_major, currency_minor, decimal, separator
 # ...
 # add the test coverage badge
-# build a CI pipeline with tests
+# build a CI pipeline with the tests
+# reduce the dependency on the NUM_NAMES and POWER_NAMES
 
 NUM_NAMES: Dict[int, str] = {
     # 0: '',

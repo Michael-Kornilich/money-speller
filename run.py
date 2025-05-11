@@ -14,24 +14,24 @@ Available functions:
 
     """
 
-    def do_spell(self, nums):
+    def do_spell(self, num):
         """
-spell <number> ... <number>
-
-Spells the numbers passed to it.
-Floating point numbers will be truncated.
-To simplify the input, the usage of '_' or ',' is permitted.
+        spell <number>
+        Spells the numbers passed to it.
+        Floating point numbers will be truncated.
+        To simplify the input, the usage of "_", "," and "." is permitted to separate the number.
         """
-        nums = nums.replace(",", "").split(" ")
-        for num in nums:
-            # guard clause
-            try:
-                num = int(num)
-            except ValueError:
-                print(f"-> '{num}' is an invalid input.")
-                continue
 
-            print("-> ", number_speller(num, POWER_NAMES, NUM_NAMES))
+        num = num.replace(",", "").replace(".","")
+
+        try:
+            num = int(num)
+        except ValueError:
+            print(f"-> '{num}' is an invalid input.")
+
+        # for testing purposes
+        # return num
+        print("-> ", number_speller(num, POWER_NAMES, NUM_NAMES))
 
     def do_exit(self, *args):
         return 1
