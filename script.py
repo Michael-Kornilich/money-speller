@@ -1,9 +1,10 @@
 from typing import Dict, List, Iterable, Tuple
-from math import modf
 
 # TODO
-# test the number speller and the parser extensively
-# add float spelling
+# fix the decimal removing leading 0s
+# understand why it removes the trailing 0s
+
+# ROAD PLAN
 # add money spelling
 # add a csv with
 # name, currency_major, currency_minor, decimal, separator
@@ -84,7 +85,7 @@ def break_down(num: int, power_step: int) -> Dict[int, int]:
     """
     Breaks down a positive integer into {power of 10 : integer}\n
     power_step determines the step of powers.\n
-    The first power is always 0. Floats are truncated.
+    The first power is always 0. Floats of the form n.0 are allowed
     """
     if not isinstance(power_step, int): raise TypeError(f"The power_step must be an integer, got {type(power_step)}")
     if not power_step >= 1: raise ValueError("The power_step must and be >= 1")
@@ -116,7 +117,7 @@ def assemble(broken_value: Dict[int, int], /) -> int:
     return res
 
 
-def split_decimal(num: int) -> tuple[int, int]:
+def split_decimal(num: int | float) -> Tuple[int, int]:
     """
     Separates any number into the integer and decimal part
     """
@@ -127,17 +128,14 @@ def split_decimal(num: int) -> tuple[int, int]:
     return int(int_), int(dec)
 
 
-def number_speller(number: int, *, power_names: dict, num_names: dict, capitalize: bool = True) -> str:
+def number_speller(number: int | float, *, power_names: dict, num_names: dict, capitalize: bool = True) -> str:
     if not isinstance(number, (float, int)): raise TypeError(f"The num must be an integer, got {type(number)}")
     if abs(number) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
+    if not isinstance(capitalize, bool):
+        raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
+    text: List[str] = []
     num, decimal = split_decimal(number)
-
-    if num < 0:
-        text: List[str] = ["minus"]
-    else:
-        text: List[str] = []
-
     num_dict: Dict[int, int] = break_down(abs(num), 3)
 
     for power, value in num_dict.items():
@@ -154,8 +152,9 @@ def number_speller(number: int, *, power_names: dict, num_names: dict, capitaliz
         # extracting 10s
         if 21 <= assemble(broken_value) <= 99:
             text.append(num_names[broken_value[1] * 10])
-            # 0s are not in the NUM_NAMES, so raw indexing might error out
-            text.append(num_names.get(broken_value[0], ""))
+            if broken_value[0] in num_names.keys():
+                text[-1] = text[-1] + "-" + num_names[broken_value[0]]
+
 
         # special 0-20
         else:
@@ -172,11 +171,13 @@ def number_speller(number: int, *, power_names: dict, num_names: dict, capitaliz
         biggest_dec_power = max(break_down(decimal, 1).keys())
 
         dec_name = number_speller(
-            10 ** biggest_dec_power,
+            10 ** (biggest_dec_power + 1),
             power_names=POWER_NAMES,
             num_names=NUM_NAMES,
             capitalize=False
         ) + "th"
+
+        if dec_name.startswith("one"): dec_name = dec_name[4:]
 
         decimal_spelled = (
                 "and " +
@@ -184,6 +185,8 @@ def number_speller(number: int, *, power_names: dict, num_names: dict, capitaliz
                 + " "
                 + dec_name
         )
+
+    if num < 0: text.insert(0, "minus")
 
     return_text = (" ".join([item for item in text if item]) + " " + decimal_spelled).strip()
     return return_text.capitalize() if capitalize else return_text
