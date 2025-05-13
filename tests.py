@@ -209,6 +209,17 @@ class ApplicationParserTests(unittest.TestCase):
         for inp in bad_inputs:
             self.assertRaises(ValueError, _parse_num, inp)
 
+    def test_splitter(self):
+        inputs = {
+            123: (123, 0.0),
+            123.123: (123, 0.123),
+            -123: (-123, 0.0),
+            -123.123: (-123, 0.123)
+        }
+
+        for inp, exp in inputs.items():
+            self.assertEqual(split_decimal(inp), exp)
+
 
 if __name__ == '__main__':
     unittest.main()

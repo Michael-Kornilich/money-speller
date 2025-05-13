@@ -117,15 +117,13 @@ def assemble(broken_value: Dict[int, int], /) -> int:
     return res
 
 
-def split_decimal(num: int | float) -> Tuple[int, int]:
+def split_decimal(num: int | float) -> Tuple[int, float]:
     """
-    Separates any number into the integer and decimal part
+    Separates any number into the integer, decimal part
     """
-    if num - int(num) != 0:
-        int_, dec = str(num).split(".")
-    else:
-        int_, dec = num, 0
-    return int(int_), int(dec)
+    num_li: List[str] = str(float(num)).split(".")
+    int_, dec = num_li
+    return int(int_), float("." + dec)
 
 
 def number_speller(number: int | float, *, power_names: dict, num_names: dict, capitalize: bool = True) -> str:
