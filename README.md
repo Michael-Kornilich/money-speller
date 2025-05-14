@@ -2,11 +2,7 @@
 
 Description
 ---
-This script is able to spell all whole numbers between -10<sup>27</sup> and  10<sup>27</sup> (ends excluded)\
-So running `spell 123.456.789` in the terminal will return `-> One hundred twenty three million four hundred fifty six thousand seven hundred eighty nine`
-
-Run `spell <number>` in order to spell a number.\
-Run `exit` to exit the scipt.
+This script is able to spell all real numbers between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)\
 
 Applications
 ---
@@ -21,3 +17,9 @@ Run by:
 1. Cloning the repository
 2. Launching the `run.py` file in terminal
 3. Follow the instuctions in the terminal or consult the **Description** part of the document
+
+Quick start
+---
+Run `spell <number>` in order to spell a number.\
+Run `separator <your separator>` or `decimal <your decimal separator>` to change the integer separator and or decimal separator.\
+Run `exit` to exit the scipt.
