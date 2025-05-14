@@ -1,9 +1,5 @@
 from typing import Dict, List, Iterable, Tuple
 
-# TODO
-# fix the decimal removing leading 0s
-# understand why it removes the trailing 0s
-
 # ROAD PLAN
 # add money spelling
 # add a csv with
@@ -132,7 +128,7 @@ def number_speller(number: int | float, *, power_names: dict, num_names: dict, c
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
-    text: List[str] = []
+    text: List[str] = [] if number >= 0 else ["minus"]
     num, decimal = split_decimal(number)
     num_dict: Dict[int, int] = break_down(abs(num), 3)
 
@@ -166,7 +162,8 @@ def number_speller(number: int | float, *, power_names: dict, num_names: dict, c
     # handling decimals
     decimal_spelled = ""
     if decimal:
-        biggest_dec_power = max(break_down(decimal, 1).keys())
+        biggest_dec_power = len(str(decimal)[2:]) - 1
+        decimal_norm = int(str(decimal)[2:])
 
         dec_name = number_speller(
             10 ** (biggest_dec_power + 1),
@@ -179,12 +176,10 @@ def number_speller(number: int | float, *, power_names: dict, num_names: dict, c
 
         decimal_spelled = (
                 "and " +
-                number_speller(decimal, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False)
+                number_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False)
                 + " "
                 + dec_name
         )
-
-    if num < 0: text.insert(0, "minus")
 
     return_text = (" ".join([item for item in text if item]) + " " + decimal_spelled).strip()
     return return_text.capitalize() if capitalize else return_text

@@ -161,20 +161,19 @@ class NumberSpellerTests(unittest.TestCase):
         for num, expected in predefined_inputs.items():
             self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
 
-    # temporarily exclude
-    # def test_predefined_float(self):
-    #     predefined_inputs = {
-    #         123.123: "One hundred twenty-three and one hundred twenty-three thousandth",
-    #         123.0: "One hundred twenty-three",
-    #         123.1: "One hundred twenty-three and one tenth",
-    #         -123.4: "Minus one hundred twenty-three and four tenth",
-    #         123.1000: "One hundred twenty-three and one tenth",
-    #         123.14: "One hundred twenty-three and fourteen hundredth",
-    #         123.01: "One hundred twenty-three and one hundredth",
-    #         123.1001: "One hundred twenty-three and one thousand one ten thousandth",
-    #     }
-    #     for num, expected in predefined_inputs.items():
-    #         self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
+    def test_predefined_float(self):
+        predefined_inputs = {
+            123.123: "One hundred twenty-three and one hundred twenty-three thousandth",
+            123.0: "One hundred twenty-three",
+            123.1: "One hundred twenty-three and one tenth",
+            -123.4: "Minus one hundred twenty-three and four tenth",
+            123.1000: "One hundred twenty-three and one tenth",
+            123.14: "One hundred twenty-three and fourteen hundredth",
+            123.01: "One hundred twenty-three and one hundredth",
+            123.1001: "One hundred twenty-three and one thousand one ten thousandth",
+        }
+        for num, expected in predefined_inputs.items():
+            self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
 
 
 class ApplicationParserTests(unittest.TestCase):
