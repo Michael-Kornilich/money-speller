@@ -2,7 +2,7 @@
 
 Description
 ---
-This script is able to spell all real numbers between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)\
+This script is able to spell all real numbers between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)
 
 Applications
 ---
