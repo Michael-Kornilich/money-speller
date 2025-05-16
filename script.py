@@ -2,9 +2,6 @@ from typing import Dict, List, Iterable, Tuple
 
 # ROAD PLAN
 # add money spelling
-# add a csv with
-# name, currency_major, currency_minor, decimal, separator
-# ...
 # add the test coverage badge
 # build a CI pipeline with the tests
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
