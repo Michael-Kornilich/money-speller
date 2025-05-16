@@ -2,7 +2,7 @@
 
 Description
 ---
-This script is able to spell all amount of money between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)\
+This script is able to spell all dollar amounts of money between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)\
 For example: `spell 123.52$` -> `One hundred twenty-three dollars and fifty two cents`
 
 Applications
