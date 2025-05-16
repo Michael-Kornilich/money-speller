@@ -181,27 +181,27 @@ class ApplicationParserTests(unittest.TestCase):
 
     def test_underscores(self):
         expected = 1234
-        got = _parse_num("1_2_3_4")
+        got = _parse_num("1_2_3_4$")
         self.assertEqual(expected, got)
 
     def test_leading_0s(self):
         expected = 1234
-        got = _parse_num("0001234")
+        got = _parse_num("0001234$")
         self.assertEqual(expected, got)
 
     def test_bad_input(self):
         bad_inputs = [
-            "a123b",
-            "abc",
-            "1-1235-123",
-            "-bscb",
-            "1e5.120",
-            "Minus two",
-            "550$",
-            "$5501",
-            "\34522350",
-            r"\34522350",
-            "/12345",
+            "a123b$",
+            "abc$",
+            "1-1235-123&$",
+            "-bscb$",
+            "1e5.120$",
+            "$Minus two",
+            "550$/",
+            "5501",
+            "$\34522350",
+            r"\34522350$",
+            "/12345$",
             "-"
         ]
 
@@ -217,7 +217,22 @@ class ApplicationParserTests(unittest.TestCase):
         }
 
         for inp, exp in inputs.items():
-            self.assertEqual(split_decimal(inp), exp)
+            self.assertEqual(exp, split_decimal(inp))
+
+
+class CurrencySpellerTests(unittest.TestCase):
+    def test_predefined(self):
+        inputs = {
+            0.01: "One cent",
+            0.1: "Ten cents",
+            123.543: "One hundred twenty three dollars and fifty four cents",
+            452.00: "Four hundred fifty two dollars",
+            9012: "Nine thousand twelve dollars",
+            -465: "Minus four hundred sixty five dollars"
+        }
+
+        for inp, exp in inputs.items():
+            self.assertEqual(exp, spell_currency(inp))
 
 
 if __name__ == '__main__':

@@ -6,7 +6,9 @@ def _parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> int
     """
     Raises a ValueError if parsing failed
     """
-    string = str_.replace(separator, "").replace(decimal, ".")
+    if "$" not in str_: raise ValueError("Failed to parse the amount, no currency sign.")
+
+    string = str_.replace(separator, "").replace(decimal, ".").replace("$","")
 
     try:
         return float(string)

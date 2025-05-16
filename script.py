@@ -119,13 +119,19 @@ def split_decimal(num: int | float) -> Tuple[int, float]:
     return int(int_), float("." + dec)
 
 
-def number_speller(number: int | float, *, power_names: dict, num_names: dict, capitalize: bool = True) -> str:
+def number_speller(
+        number: int | float,
+        *,
+        power_names: Dict[int, str],
+        num_names: Dict[int, str],
+        capitalize: bool = True
+) -> str:
     if not isinstance(number, (float, int)): raise TypeError(f"The num must be an integer, got {type(number)}")
     if abs(number) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
-    text: List[str] = [] if number >= 0 else ["minus"]
+    spelled_int_li: List[str] = [] if number >= 0 else ["minus"]
     num, decimal = split_decimal(number)
     num_dict: Dict[int, int] = break_down(abs(num), 3)
 
@@ -137,27 +143,27 @@ def number_speller(number: int | float, *, power_names: dict, num_names: dict, c
         # extracting 100s
         if assemble(broken_value) >= 100:
             hundreds = broken_value[2]
-            text.extend([num_names[hundreds], power_names[2]])
+            spelled_int_li.extend([num_names[hundreds], power_names[2]])
             broken_value.pop(2)
 
         # extracting 10s
         if 21 <= assemble(broken_value) <= 99:
-            text.append(num_names[broken_value[1] * 10])
+            spelled_int_li.append(num_names[broken_value[1] * 10])
             if broken_value[0] in num_names.keys():
-                text[-1] = text[-1] + "-" + num_names[broken_value[0]]
+                spelled_int_li[-1] = spelled_int_li[-1] + "-" + num_names[broken_value[0]]
 
 
         # special 0-20
         else:
             v = assemble(broken_value)
             # 0s are not in the NUM_NAMES, so raw indexing might error out
-            text.append(num_names.get(v, ""))
+            spelled_int_li.append(num_names.get(v, ""))
 
         # powers 0, 1 are not in the POWER_NAMES
-        text.append(power_names.get(power, ""))
+        spelled_int_li.append(power_names.get(power, ""))
 
     # handling decimals
-    decimal_spelled = ""
+    spelled_dec_li: List[str] = []
     if decimal:
         biggest_dec_power = len(str(decimal)[2:]) - 1
         decimal_norm = int(str(decimal)[2:])
@@ -171,12 +177,41 @@ def number_speller(number: int | float, *, power_names: dict, num_names: dict, c
 
         if dec_name.startswith("one"): dec_name = dec_name[4:]
 
-        decimal_spelled = (
-                "and " +
-                number_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False)
-                + " "
-                + dec_name
-        )
+        spelled_dec_li = [
+            "and",
+            *number_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" "),
+            dec_name
+        ]
 
-    return_text = (" ".join([item for item in text if item]) + " " + decimal_spelled).strip()
+    return_list = filter(lambda x: bool(x), spelled_int_li + spelled_dec_li)
+
+    return_text = " ".join(return_list).strip()
     return return_text.capitalize() if capitalize else return_text
+
+
+def spell_currency(amount: int | float, currency: Dict[str, List[str]] | None = "US dollar") -> str:
+    num, decimal = split_decimal(amount)
+
+    if decimal < 0.01:
+        print(f"The the max number of decimal points exceeded. Max 2, given {len(str(decimal)[2:])}"
+              f"Rounding to the 2 decimal points")
+        decimal = round(decimal, 2)
+
+    return_text: str = number_speller(num, num_names=NUM_NAMES, power_names=POWER_NAMES, capitalize=False)
+
+    if num > 1:
+        return_text += " dollars "
+    elif num == 1:
+        return_text += " dollar "
+
+    if decimal and return_text: return_text += "and "
+
+    return_text = return_text + number_speller(int(str(decimal)[2:]), num_names=NUM_NAMES, power_names=POWER_NAMES,
+                                               capitalize=False)
+    # age-old 0.1 vs 0.01 problem
+    if decimal > 0.01:
+        return_text = return_text + " cents"
+    elif decimal == 0.01:
+        return_text = return_text + " cent"
+
+    return return_text.capitalize()
