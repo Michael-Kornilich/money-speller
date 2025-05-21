@@ -1,5 +1,4 @@
 import cmd
-from script import currency_speller
 from typing import Dict
 
 NUM_NAMES: Dict[int, str] = {
@@ -45,40 +44,65 @@ POWER_NAMES: Dict[int, str] = {
 }
 
 
-def parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> int | float:
+def get_time_of_day() -> str:
+    from datetime import datetime
+    hour = datetime.now().time().hour
+
+    if 23 <= hour or hour < 4:
+        return "night"
+    elif 4 <= hour <= 12:
+        return "morning"
+    elif 12 < hour <= 16:
+        return "day"
+    else:
+        return "evening"
+
+def parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> float | None:
     """
-    Raises a ValueError if parsing failed
+    Parses any number of the form:\n
+    [0-9$]+<separator>[0-9$]+....<decimal>[0-9$]+
+    :param str_: the number to be parsed as string
+    :param separator: the separator to use while parsing
+    :param decimal: the decimal separator to use while parsing
+    :returns: float if parsing is successful, None if failed
     """
-    if "$" not in str_: raise ValueError("Failed to parse the amount, no currency sign.")
+    if "$" not in str_: return None
 
     string = str_.replace(separator, "").replace(decimal, ".").replace("$", "")
 
     try:
         return float(string)
     except ValueError:
-        raise ValueError("The number could not be parsed")
+        return None
 
 
 class Shell(cmd.Cmd):
     prompt = "> "
     intro = """
-    This script spells every integer between -10^27 and 10^27.
-    (Floating point numbers will be truncated)
+    Good {0}!
+    This script spells every money amount between -10^27 and 10^27 (ends excluded).
 
-    Available functions:
-        - spell <number>: spells number(s)
-        - separator <new separator or nothing>: 
-            Default = "."
-            define a separator which is used to split the whole parts of the numbers.
-            The separator is not strictly enforced so calling 1......4 will return fourteen.
-        - decimal <new decimal separator or nothing>: 
-            Default = ","
-            define a decimal separator. 
+    \033[94mAvailable functions\033[0m:
+    
+        -\033[92m spell <amount>\033[0m: 
+            Spell the <amount> of money
+        
+        -\033[92m separator [<new-separator>]\033[0m: 
+            Define a separator, which is used to split the whole parts of the numbers.
+            If nothing passed show the current separator.
+            The default separator is "."
+            The separator is not strictly enforced, so calling ..$...1....4 will work the same as calling $14.
+            
+        -\033[92m decimal [<new-decimal-separator>]\033[0m: 
+            Define a decimal separator. The default one is ",".
+            If nothing passed show the current decimal separator.
             The decimal separator is used to split the integer from its decimal part. 
-            It IS strictly enforced and the spell function will not work
+            It is STRICTLY enforced and the spelling will fail
             if the decimal separator is found in the target number more than once.
-        - exit: exits the script
-    """
+            
+        -\033[92m exit\033[0m: 
+            Exits the script
+    """.format(get_time_of_day())
 
     def __init__(self):
         super().__init__()
@@ -87,7 +111,7 @@ class Shell(cmd.Cmd):
 
     def do_separator(self, sep):
         if len(sep) == 0:
-            print(f"Current separator: {self.separator}")
+            print(f"Current separators: '{self.separator}' and '_' ")
         elif len(sep) == 1:
             self.separator = sep
             print(f"Changed separator to: {sep}")
@@ -105,20 +129,21 @@ class Shell(cmd.Cmd):
             print(f"Invalid input {dec}. Pass a single character to change the decimal separator or "
                   f"nothing in order to view the current decimal separator")
 
-    def do_spell(self, num: str):
+    def do_spell(self, _num: str):
         """
         spell <number>
         Spells the numbers passed to it.
-        Floating point numbers will be truncated.
+        Money amounts with more than 2 decimals will be rounded to 2 decimals
         To simplify the input, the usage of "_" and the defined separator is permitted to separate the number.
         """
-        try:
-            num_ = parse_num(num, separator=self.separator, decimal=self.decimal)
-        except ValueError:
+        from script import currency_speller
+
+        num = parse_num(_num, separator=self.separator, decimal=self.decimal)
+        if not num:
             print("Invalid input.")
             return
 
-        print("-> ", currency_speller(num_, num_names=NUM_NAMES, power_names=POWER_NAMES))
+        print("-> " + currency_speller(num, num_names=NUM_NAMES, power_names=POWER_NAMES))
 
     def do_exit(self, *args):
         return 1

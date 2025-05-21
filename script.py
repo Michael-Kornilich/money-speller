@@ -1,9 +1,6 @@
 from typing import Dict, List, Iterable, Tuple
 
 
-# ROAD PLAN
-# add money spelling
-
 # OPTIONAL
 # add the test coverage badge
 # build a CI pipeline with the tests
@@ -88,13 +85,21 @@ def currency_speller(
         num_names: Dict[int, str],
         capitalize: bool = True
 ) -> str:
+    """
+    Spells a number as a dollar amount
+
+    :param number: The amount to be spelled, number must be within -10^27 < x < 10^27
+    :param power_names: The names of powers of 10, namely: 2, 3, 6, 9, 12, 15, 18, 21, 24
+    :param num_names: The names of key numbers, names: 1-20, 30, 40, 50, 60, 70, 80, 90
+    :param capitalize: Whether to capitalize the output or not
+    :return: Spelled dollar amount
+    """
     if not isinstance(number, (float, int)): raise TypeError(f"The num must be an integer, got {type(number)}")
     if abs(number) >= 10 ** 27: raise ValueError("The |num| must be less than 1e27")
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
     integer, decimal = split_decimal(number)
-    # pdb.set_trace()
 
     decimal = abs(decimal)
     if decimal != round(decimal, 2):

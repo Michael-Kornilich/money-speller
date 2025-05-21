@@ -203,11 +203,18 @@ class ApplicationParserTests(unittest.TestCase):
             "$\34522350",
             r"\34522350$",
             "/12345$",
-            "-"
+            "-",
+            "√asdg"
         ]
 
         for inp in bad_inputs:
-            self.assertRaises(ValueError, parse_num, inp)
+            self.assertEqual(None, parse_num(inp))
+
+    def test_bad_random_input(self):
+        for _ in range(10_000):
+            chars = "".join(chr(randint(0, 1_114_111)) for i in range(10))
+            if not chars.isnumeric():
+                self.assertEqual(None, parse_num(chars))
 
     def test_splitter(self):
         inputs = {
@@ -221,6 +228,10 @@ class ApplicationParserTests(unittest.TestCase):
 
         for inp, exp in inputs.items():
             self.assertEqual(exp, split_decimal(inp))
+
+
+class ApplicationSeparatorTests(unittest.TestCase):
+    pass
 
 
 if __name__ == '__main__':
