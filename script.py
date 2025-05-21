@@ -1,4 +1,5 @@
 from typing import Dict, List, Iterable, Tuple
+import pdb
 
 # ROAD PLAN
 # add money spelling
@@ -115,10 +116,11 @@ def assemble(broken_value: Dict[int, int], /) -> int:
 def split_decimal(num: int | float) -> Tuple[int, float]:
     """
     Separates any number into the integer, decimal part
+    Such that the num == sum(return values)
     """
-    num_li: List[str] = str(float(num)).split(".")
-    int_, dec = num_li
-    return int(int_), float("." + dec)
+    int_, dec = str(float(num)).split(".")
+    flt = float("." + dec) if num > 0 else -float("." + dec)
+    return int(int_), flt
 
 
 def currency_speller(
@@ -133,14 +135,16 @@ def currency_speller(
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
-    spelled_int_li: List[str] = [] if number >= 0 else ["minus"]
-    num, decimal = split_decimal(number)
-    num_dict: Dict[int, int] = break_down(abs(num), 3)
+    integer, decimal = split_decimal(number)
+    # pdb.set_trace()
 
-    if decimal < 0.01:
-        print(f"The the max number of decimal points exceeded. Max 2, given {len(str(decimal)[2:])}"
-              f"Rounding to the 2 decimal points")
+    decimal = abs(decimal)
+    if decimal != round(decimal, 2):
+        print(f"The the max number of decimal points exceeded. Rounding to the 2 decimal points. {number=}")
         decimal = round(decimal, 2)
+
+    spelled_int_li: List[str] = [] if number >= 0 else ["minus"]
+    num_dict: Dict[int, int] = break_down(abs(integer), 3)
 
     for power, value in num_dict.items():
         if not value: continue
@@ -159,7 +163,6 @@ def currency_speller(
             if broken_value[0] in num_names.keys():
                 spelled_int_li[-1] = spelled_int_li[-1] + "-" + num_names[broken_value[0]]
 
-
         # special 0-20
         else:
             v = assemble(broken_value)
@@ -169,30 +172,30 @@ def currency_speller(
         # powers 0, 1 are not in the POWER_NAMES
         spelled_int_li.append(power_names.get(power, ""))
 
-    if num > 1:
+    if abs(integer) > 1:
         spelled_int_li.append("dollars")
-    if num == 1:
+    if abs(integer) == 1:
         spelled_int_li.append("dollar")
+    # else: the decimal is being spelled
 
     # handling decimals
-    spelled_dec_li: List[str] = []
-    if decimal:
-        decimal_norm = int(str(decimal)[2:])
+    if not decimal:
+        return_list = filter(lambda x: bool(x), spelled_int_li)
+        return_text = " ".join(return_list).strip()
+        return return_text.capitalize() if capitalize else return_text
 
-        if decimal_norm > 1:
-            dec_name = "cents"
-        elif decimal_norm == 1:
-            dec_name = "cent"
-        else:
-            dec_name = ""
+    if decimal > 0.01:
+        dec_name = "cents"
+    elif decimal == 0.01:
+        dec_name = "cent"
 
-        spelled_dec_li = [
-            "and",
-            *currency_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" "),
-            dec_name
-        ]
+    dec_norm = int(str(decimal)[2:])
+    spelled_dec_li = [
+        "and",
+        *currency_speller(dec_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" ")[:-1],
+        dec_name
+    ]
 
     return_list = filter(lambda x: bool(x), spelled_int_li + spelled_dec_li)
-
     return_text = " ".join(return_list).strip()
     return return_text.capitalize() if capitalize else return_text

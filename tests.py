@@ -163,8 +163,9 @@ class CurrencySpellerTests(unittest.TestCase):
 
     def test_predefined_float(self):
         predefined_inputs = {
+            456_234.00001: "Four hundred fifty-six thousand two hundred thirty-four dollars",
             123.123: "One hundred twenty-three dollars and twelve cents",
-            123.0: "One hundred twenty-three dollars",
+            -123.0: "Minus one hundred twenty-three dollars",
             123.1: "One hundred twenty-three dollars and ten cents",
             -123.4: "Minus one hundred twenty-three dollars and forty cents",
             123.1000: "One hundred twenty-three dollars and ten cents",
@@ -213,7 +214,9 @@ class ApplicationParserTests(unittest.TestCase):
             123: (123, 0.0),
             123.123: (123, 0.123),
             -123: (-123, 0.0),
-            -123.123: (-123, 0.123)
+            -123.123: (-123, -0.123),
+            0.12: (0.0, 0.12),
+            -0.95: (0.0, -0.95)
         }
 
         for inp, exp in inputs.items():
