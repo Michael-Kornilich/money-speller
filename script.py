@@ -1,5 +1,5 @@
 from typing import Dict, List, Iterable, Tuple
-import pdb
+
 
 # ROAD PLAN
 # add money spelling
@@ -8,48 +8,6 @@ import pdb
 # add the test coverage badge
 # build a CI pipeline with the tests
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
-
-NUM_NAMES: Dict[int, str] = {
-    # 0: '',
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-    10: 'ten',
-    11: 'eleven',
-    12: 'twelve',
-    13: 'thirteen',
-    14: 'fourteen',
-    15: 'fifteen',
-    16: 'sixteen',
-    17: 'seventeen',
-    18: 'eighteen',
-    19: 'nineteen',
-    20: 'twenty',
-    30: 'thirty',
-    40: 'forty',
-    50: 'fifty',
-    60: 'sixty',
-    70: 'seventy',
-    80: 'eighty',
-    90: 'ninety'
-}
-POWER_NAMES: Dict[int, str] = {
-    2: "hundred",
-    3: "thousand",
-    6: "million",
-    9: "billion",
-    12: "trillion",
-    15: "quadrillion",
-    18: "quintillion",
-    21: "hexillion",
-    24: "heptillion"
-}
 
 
 def batched(iterable: Iterable, n: int, *, strict=False, backwards: bool = False) -> Iterable:
@@ -189,10 +147,13 @@ def currency_speller(
     elif decimal == 0.01:
         dec_name = "cent"
 
-    dec_norm = int(str(decimal)[2:])
+    dec_norm = int(
+        f"{decimal:.2f}"[2:]
+    )
+
     spelled_dec_li = [
         "and",
-        *currency_speller(dec_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" ")[:-1],
+        *currency_speller(dec_norm, power_names=power_names, num_names=num_names, capitalize=False).split(" ")[:-1],
         dec_name
     ]
 

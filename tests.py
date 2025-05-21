@@ -2,7 +2,7 @@ import unittest
 from random import randint
 
 from script import *
-from run import Shell, _parse_num
+from run import *
 
 
 class NumberBreakerTests(unittest.TestCase):
@@ -182,12 +182,12 @@ class ApplicationParserTests(unittest.TestCase):
 
     def test_underscores(self):
         expected = 1234
-        got = _parse_num("1_2_3_4$")
+        got = parse_num("1_2_3_4$")
         self.assertEqual(expected, got)
 
     def test_leading_0s(self):
         expected = 1234
-        got = _parse_num("0001234$")
+        got = parse_num("0001234$")
         self.assertEqual(expected, got)
 
     def test_bad_input(self):
@@ -207,7 +207,7 @@ class ApplicationParserTests(unittest.TestCase):
         ]
 
         for inp in bad_inputs:
-            self.assertRaises(ValueError, _parse_num, inp)
+            self.assertRaises(ValueError, parse_num, inp)
 
     def test_splitter(self):
         inputs = {
