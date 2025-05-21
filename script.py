@@ -2,6 +2,8 @@ from typing import Dict, List, Iterable, Tuple
 
 # ROAD PLAN
 # add money spelling
+
+# OPTIONAL
 # add the test coverage badge
 # build a CI pipeline with the tests
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
@@ -119,7 +121,7 @@ def split_decimal(num: int | float) -> Tuple[int, float]:
     return int(int_), float("." + dec)
 
 
-def number_speller(
+def currency_speller(
         number: int | float,
         *,
         power_names: Dict[int, str],
@@ -134,6 +136,11 @@ def number_speller(
     spelled_int_li: List[str] = [] if number >= 0 else ["minus"]
     num, decimal = split_decimal(number)
     num_dict: Dict[int, int] = break_down(abs(num), 3)
+
+    if decimal < 0.01:
+        print(f"The the max number of decimal points exceeded. Max 2, given {len(str(decimal)[2:])}"
+              f"Rounding to the 2 decimal points")
+        decimal = round(decimal, 2)
 
     for power, value in num_dict.items():
         if not value: continue
@@ -162,24 +169,26 @@ def number_speller(
         # powers 0, 1 are not in the POWER_NAMES
         spelled_int_li.append(power_names.get(power, ""))
 
+    if num > 1:
+        spelled_int_li.append("dollars")
+    if num == 1:
+        spelled_int_li.append("dollar")
+
     # handling decimals
     spelled_dec_li: List[str] = []
     if decimal:
-        biggest_dec_power = len(str(decimal)[2:]) - 1
         decimal_norm = int(str(decimal)[2:])
 
-        dec_name = number_speller(
-            10 ** (biggest_dec_power + 1),
-            power_names=POWER_NAMES,
-            num_names=NUM_NAMES,
-            capitalize=False
-        ) + "th"
-
-        if dec_name.startswith("one"): dec_name = dec_name[4:]
+        if decimal_norm > 1:
+            dec_name = "cents"
+        elif decimal_norm == 1:
+            dec_name = "cent"
+        else:
+            dec_name = ""
 
         spelled_dec_li = [
             "and",
-            *number_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" "),
+            *currency_speller(decimal_norm, power_names=POWER_NAMES, num_names=NUM_NAMES, capitalize=False).split(" "),
             dec_name
         ]
 
@@ -187,31 +196,3 @@ def number_speller(
 
     return_text = " ".join(return_list).strip()
     return return_text.capitalize() if capitalize else return_text
-
-
-def spell_currency(amount: int | float, currency: Dict[str, List[str]] | None = "US dollar") -> str:
-    num, decimal = split_decimal(amount)
-
-    if decimal < 0.01:
-        print(f"The the max number of decimal points exceeded. Max 2, given {len(str(decimal)[2:])}"
-              f"Rounding to the 2 decimal points")
-        decimal = round(decimal, 2)
-
-    return_text: str = number_speller(num, num_names=NUM_NAMES, power_names=POWER_NAMES, capitalize=False)
-
-    if num > 1:
-        return_text += " dollars "
-    elif num == 1:
-        return_text += " dollar "
-
-    if decimal and return_text: return_text += "and "
-
-    return_text = return_text + number_speller(int(str(decimal)[2:]), num_names=NUM_NAMES, power_names=POWER_NAMES,
-                                               capitalize=False)
-    # age-old 0.1 vs 0.01 problem
-    if decimal > 0.01:
-        return_text = return_text + " cents"
-    elif decimal == 0.01:
-        return_text = return_text + " cent"
-
-    return return_text.capitalize()

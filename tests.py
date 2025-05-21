@@ -139,41 +139,41 @@ class AssemblerTests(unittest.TestCase):
         self.assertRaises(TypeError, assemble, "hello")
 
 
-class NumberSpellerTests(unittest.TestCase):
+class CurrencySpellerTests(unittest.TestCase):
     def test_string_type(self):
-        self.assertRaises(TypeError, number_speller, num="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
+        self.assertRaises(TypeError, currency_speller, num="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
 
     def test_list_type(self):
-        self.assertRaises(TypeError, number_speller, num=[123456], power_names=POWER_NAMES, num_names=NUM_NAMES)
+        self.assertRaises(TypeError, currency_speller, num=[123456], power_names=POWER_NAMES, num_names=NUM_NAMES)
 
     def test_predefined_int(self):
         predefined_inputs = {
             0: "",
-            -1: "Minus one",
-            14: "Fourteen",
-            -12: "Minus twelve",
-            345_001_000: "Three hundred forty-five million one thousand",
-            1_000_001: "One million one",
-            901_001_437_010: "Nine hundred one billion one million four hundred thirty-seven thousand ten",
-            -123_123: "Minus one hundred twenty-three thousand one hundred twenty-three",
-            12_000_013: "Twelve million thirteen",
+            -1: "Minus one dollar",
+            14: "Fourteen dollars",
+            -12: "Minus twelve dollars",
+            345_001_000: "Three hundred forty-five million one thousand dollars",
+            1_000_001: "One million one dollars",
+            901_001_437_010: "Nine hundred one billion one million four hundred thirty-seven thousand ten dollars",
+            -123_123: "Minus one hundred twenty-three thousand one hundred twenty-three dollars",
+            12_000_013: "Twelve million thirteen dollars",
         }
         for num, expected in predefined_inputs.items():
-            self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
+            self.assertEqual(expected, currency_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
 
     def test_predefined_float(self):
         predefined_inputs = {
-            123.123: "One hundred twenty-three and one hundred twenty-three thousandth",
-            123.0: "One hundred twenty-three",
-            123.1: "One hundred twenty-three and one tenth",
-            -123.4: "Minus one hundred twenty-three and four tenth",
-            123.1000: "One hundred twenty-three and one tenth",
-            123.14: "One hundred twenty-three and fourteen hundredth",
-            123.01: "One hundred twenty-three and one hundredth",
-            123.1001: "One hundred twenty-three and one thousand one ten thousandth",
+            123.123: "One hundred twenty-three dollars and twelve cents",
+            123.0: "One hundred twenty-three dollars",
+            123.1: "One hundred twenty-three dollars and ten cents",
+            -123.4: "Minus one hundred twenty-three dollars and forty cents",
+            123.1000: "One hundred twenty-three dollars and ten cents",
+            123.14: "One hundred twenty-three dollars and fourteen cents",
+            123.01: "One hundred twenty-three dollars and one cent",
+            123.1001: "One hundred twenty-three dollars and ten cents",
         }
         for num, expected in predefined_inputs.items():
-            self.assertEqual(expected, number_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
+            self.assertEqual(expected, currency_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
 
 
 class ApplicationParserTests(unittest.TestCase):
@@ -218,21 +218,6 @@ class ApplicationParserTests(unittest.TestCase):
 
         for inp, exp in inputs.items():
             self.assertEqual(exp, split_decimal(inp))
-
-
-class CurrencySpellerTests(unittest.TestCase):
-    def test_predefined(self):
-        inputs = {
-            0.01: "One cent",
-            0.1: "Ten cents",
-            123.543: "One hundred twenty three dollars and fifty four cents",
-            452.00: "Four hundred fifty two dollars",
-            9012: "Nine thousand twelve dollars",
-            -465: "Minus four hundred sixty five dollars"
-        }
-
-        for inp, exp in inputs.items():
-            self.assertEqual(exp, spell_currency(inp))
 
 
 if __name__ == '__main__':

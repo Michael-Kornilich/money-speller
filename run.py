@@ -1,5 +1,5 @@
 import cmd
-from script import number_speller, POWER_NAMES, NUM_NAMES
+from script import currency_speller
 
 
 def _parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> int | float:
@@ -8,7 +8,7 @@ def _parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> int
     """
     if "$" not in str_: raise ValueError("Failed to parse the amount, no currency sign.")
 
-    string = str_.replace(separator, "").replace(decimal, ".").replace("$","")
+    string = str_.replace(separator, "").replace(decimal, ".").replace("$", "")
 
     try:
         return float(string)
@@ -75,7 +75,7 @@ class Shell(cmd.Cmd):
             print("Invalid input.")
             return
 
-        print("-> ", number_speller(num_, power_names=POWER_NAMES, num_names=NUM_NAMES))
+        print("-> ", currency_speller(num_))
 
     def do_exit(self, *args):
         return 1
