@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from random import randint
 
 from script import *
@@ -180,7 +181,6 @@ class CurrencySpellerTests(unittest.TestCase):
 
 
 class ApplicationParserTests(unittest.TestCase):
-    shell = Shell()
 
     def test_underscores(self):
         expected = 1234
@@ -232,8 +232,68 @@ class ApplicationParserTests(unittest.TestCase):
             self.assertEqual(exp, split_decimal(inp))
 
 
-class ApplicationSeparatorTests(unittest.TestCase):
-    pass
+class ApplicationSeparatorsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.shell = Shell()
+        cls.separator = cls.shell.separator
+        cls.decimal = cls.shell.decimal
+
+    @patch("builtins.print")
+    def test_decimal_bad_input(self, mock_print):
+        bad_inputs = [
+            "hello",
+            "six"
+            "324md",
+            "\033fdfl",
+            "\n",
+            "\r",
+            "---",
+            "\\",
+            "\thello"
+        ]
+
+        for val in bad_inputs:
+            self.shell.do_decimal(val)
+            mock_print.assert_called_with(
+                f"Invalid decimal separator '{val}'.\n"
+                f"The available decimal separators are: {" ".join(self.shell.available_sep)}")
+
+    @patch("builtins.print")
+    def test_decimal_special(self, mock_print):
+        inp_err = {
+            self.separator: f"Invalid decimal separator '{self.separator}'. The decimal and the integer separators cannot be same.",
+        }
+        for dec, err_msg in inp_err.items():
+            self.shell.do_decimal(dec)
+            mock_print.assert_called_with(err_msg)
+
+    @patch("builtins.print")
+    def test_separator(self, mock_print):
+        bad_inputs = [
+            "hello",
+            "5",
+            "9"
+            "six"
+            "324md",
+            "\033fdfl",
+            "---",
+            "        "
+            "\n",
+            "\r"
+        ]
+
+        for val in bad_inputs:
+            self.shell.do_separator(val)
+            mock_print.assert_called_with(
+                f"Invalid integer separator '{val}'.\n"
+                f"The available integer separators are: {" ".join(self.shell.available_sep)}")
+
+    @patch("builtins.print")
+    def test_separator_special(self, mock_print):
+        self.shell.do_separator(self.decimal)
+        mock_print.assert_called_with(
+            f"Invalid integer separator '{self.decimal}'. The integer and the decimal separators cannot be same.")
 
 
 if __name__ == '__main__':

@@ -82,9 +82,15 @@ def parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> floa
 
 
 class Shell(cmd.Cmd):
+    def __init__(self):
+        super().__init__()
+        self.available_sep = [',', '.', '-', '–', '_', '&', '/', ':', '|']
+        self.separator = "."
+        self.decimal = ","
+
     prompt = "> "
     intro = """
-    Good {0}!
+    Good {time}!
     This script spells every money amount between -10^27 and 10^27 (ends excluded).
 
     \033[94mAvailable functions\033[0m:
@@ -95,11 +101,16 @@ class Shell(cmd.Cmd):
         -\033[92m separator [<new-separator>]\033[0m: 
             Define a separator, which is used to split the whole parts of the numbers.
             If nothing passed show the current separator.
+            The available separators are as follow:
+                {sep_list}   
             The default separator is "."
             The separator is not strictly enforced, so calling ..$...1....4 will work the same as calling $14.
             
         -\033[92m decimal [<new-decimal-separator>]\033[0m: 
-            Define a decimal separator. The default one is ",".
+            Define a decimal separator.
+            The available separators are as follow:
+                {sep_list} 
+            The default one is ",".
             If nothing passed show the current decimal separator.
             The decimal separator is used to split the integer from its decimal part. 
             It is STRICTLY enforced and the spelling will fail
@@ -107,38 +118,48 @@ class Shell(cmd.Cmd):
             
         -\033[92m exit\033[0m: 
             Exits the script
-    """.format(get_time_of_day())
+    """.format(time=get_time_of_day(), sep_list=" ".join([',', '.', '-', '–', '_', '&', '/', ':', '|']))
 
-    def __init__(self):
-        super().__init__()
-        self.separator = "."
-        self.decimal = ","
-
-    def do_separator(self, sep):
+    def do_separator(self, sep: str):
         """
         Set a new integer separator or see the current one (if nothing passed)
         """
-        if len(sep) == 0:
-            print(f"Current separators: '{self.separator}' and '_' ")
-        elif len(sep) == 1:
-            self.separator = sep
-            print(f"Changed separator to: {sep}")
-        else:
-            print(f"Invalid input {sep}. Pass a single character to change the separator or "
-                  f"nothing in order to view the current separator")
+        if not sep:
+            print(f"Current integer separator: '{self.separator}'")
+            return
 
-    def do_decimal(self, dec):
+        if sep not in self.available_sep:
+            print(f"Invalid integer separator '{sep}'.\n"
+                  f"The available integer separators are: {" ".join(self.available_sep)}")
+            return
+        if sep == self.decimal:
+            print(f"Invalid integer separator '{sep}'. The integer and the decimal separators cannot be same.")
+            return
+
+        self.separator = sep
+        print(f"Changed separator to: {sep}")
+
+    def do_decimal(self, dec: str):
         """
         Set a new decimal separator or see the current one (if nothing passed)
         """
+        if not dec:
+            print(f"Current decimal separator: '{self.decimal}'")
+            return
+
+        if dec not in self.available_sep:
+            print(f"Invalid decimal separator '{dec}'.\n"
+                  f"The available decimal separators are: {" ".join(self.available_sep)}")
+            return
+        if dec == self.separator:
+            print(f"Invalid decimal separator '{dec}'. The decimal and the integer separators cannot be same.")
+            return
+
         if len(dec) == 0:
             print(f"Current separator: {self.decimal}")
         elif len(dec) == 1:
             self.decimal = dec
             print(f"Changed separator to: {dec}")
-        else:
-            print(f"Invalid input {dec}. Pass a single character to change the decimal separator or "
-                  f"nothing in order to view the current decimal separator")
 
     def do_spell(self, _num: str):
         """

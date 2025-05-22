@@ -2,7 +2,6 @@ from typing import Dict, List, Iterable, Tuple
 
 
 # TODO
-# test all the app
 # build a CI pipeline with the tests
 # add both badges onto the github page
 
@@ -122,15 +121,14 @@ def currency_speller(
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
     if number != round(number, 2):
-        print(f"The the max number of decimal points exceeded. Rounding to the 2 decimal points. {number=}")
+        print(f"The the max number of decimal points exceeded. "
+              f"Rounding to the 2 decimal points. New number: ${round(number, 2)}")
 
+    integer: int
+    decimal: float
     integer, decimal = split_decimal(round(number, 2))
 
     decimal = abs(decimal)
-    if decimal != round(decimal, 2):
-        print(f"The the max number of decimal points exceeded. Rounding to the 2 decimal points. {number=}")
-        decimal = round(decimal, 2)
-
     spelled_int_li: List[str] = [] if number >= 0 else ["minus"]
     num_dict: Dict[int, int] = break_down(abs(integer), 3)
 
@@ -172,13 +170,13 @@ def currency_speller(
         return_text = " ".join(return_list).strip()
         return return_text.capitalize() if capitalize else return_text
 
-    dec_name = ""
+    dec_name: str = ""
     if decimal > 0.01:
         dec_name = "cents"
     elif decimal == 0.01:
         dec_name = "cent"
 
-    dec_norm = int(
+    dec_norm: int = int(
         f"{decimal:.2f}"[2:]
     )
 
