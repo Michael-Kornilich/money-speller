@@ -10,12 +10,18 @@ from typing import Dict, List, Iterable, Tuple
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
 
 
-def batched(iterable: Iterable, n: int, *, strict=False, backwards: bool = False) -> Iterable:
+def batched(iterable: Iterable, n: int, *, strict: bool = False, backwards: bool = False) -> Iterable:
     """
-    Same functionality as itertools.batched, but with an added feature of iteration backwards.
+    Same functionality as itertools.batched, but with an added feature of iteration backwards.\n
     I.E.
-    batched("hello world", 3, backwards=False) -> "hel", "lo ", "wor", "ld"
-    batched("hello world", 3, backwards=True) -> "rld", " wo", "llo", "he"
+        batched("hello world", 3, backwards=False) -> "hel", "lo ", "wor", "ld"\n
+        batched("hello world", 3, backwards=True) -> "rld", " wo", "llo", "he"
+
+    :param iterable: The object to be iterated over (has to have __iter__ method defined)
+    :param n: The batch size
+    :param strict: Whether to raise an error if the final batch is less than n
+    :param backwards: Whether to iterate the object starting from the back
+    :return: Tuple of the batch
     """
     from itertools import islice
 
@@ -37,12 +43,17 @@ def batched(iterable: Iterable, n: int, *, strict=False, backwards: bool = False
 
 def break_down(num: int, power_step: int) -> Dict[int, int]:
     """
-    Breaks down a positive integer into {power of 10 : integer}\n
-    power_step determines the step of powers.\n
-    The first power is always 0. Floats of the form n.0 are allowed
+    Breaks down a positive integer into {power of 10 : integer}
+
+    power_step=1 -> {3:int, 2:int, 1:int, 0:int}\n
+    power_step=3 -> {9:int, 6:int, 3:int, 0:int}
+
+    :param num: The number to be broken down
+    :param power_step: The step of the power of 10 to use, the first power of 10 is always 0. I.E.
+    :return: Dictionary of the form {power of 10 : integer,...}
     """
     if not isinstance(power_step, int): raise TypeError(f"The power_step must be an integer, got {type(power_step)}")
-    if not power_step >= 1: raise ValueError("The power_step must and be >= 1")
+    if power_step < 1: raise ValueError("The power_step must and be >= 1")
 
     if not isinstance(num, (float, int)): raise TypeError(f"The num must be an integer, got {type(num)}")
     if not num >= 0: raise ValueError(f"The num must be >= 0, got {num}")
@@ -62,6 +73,11 @@ def break_down(num: int, power_step: int) -> Dict[int, int]:
 
 
 def assemble(broken_value: Dict[int, int], /) -> int:
+    """
+    Reverse function of the break_down
+    :param broken_value: The {power of 10 : integer,...} dictionary to be assembled
+    :return: The underlying integer
+    """
     if not isinstance(broken_value, dict): raise TypeError(f"Expected a dictionary, got {type(broken_value)}")
     if not broken_value: raise ValueError("The broken value must have values inside")
 
@@ -73,8 +89,11 @@ def assemble(broken_value: Dict[int, int], /) -> int:
 
 def split_decimal(num: int | float) -> Tuple[int, float]:
     """
-    Separates any number into the integer, decimal part
-    Such that the num == sum(return values)
+    Separates any number into the integer and decimal part, such that the num == sum(return values)\n.
+    With negative values the "-" is carried over to both integer and decimal part.
+
+    :param num: The number
+    :return: Tuple of whole and decimal part
     """
     int_, dec = str(float(num)).split(".")
     flt = float("." + dec) if num > 0 else -float("." + dec)
@@ -89,7 +108,7 @@ def currency_speller(
         capitalize: bool = True
 ) -> str:
     """
-    Spells a number as a dollar amount
+    Spells a number as a dollar amount.
 
     :param number: The amount to be spelled, number must be within -10^27 < x < 10^27
     :param power_names: The names of powers of 10, namely: 2, 3, 6, 9, 12, 15, 18, 21, 24
@@ -102,10 +121,10 @@ def currency_speller(
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
-    if number != round(number,2):
+    if number != round(number, 2):
         print(f"The the max number of decimal points exceeded. Rounding to the 2 decimal points. {number=}")
 
-    integer, decimal = split_decimal(round(number,2))
+    integer, decimal = split_decimal(round(number, 2))
 
     decimal = abs(decimal)
     if decimal != round(decimal, 2):
@@ -153,6 +172,7 @@ def currency_speller(
         return_text = " ".join(return_list).strip()
         return return_text.capitalize() if capitalize else return_text
 
+    dec_name = ""
     if decimal > 0.01:
         dec_name = "cents"
     elif decimal == 0.01:

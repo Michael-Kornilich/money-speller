@@ -45,6 +45,10 @@ POWER_NAMES: Dict[int, str] = {
 
 
 def get_time_of_day() -> str:
+    """
+    Helper function for dynamic greetings.
+    :return: "morning" | "day" | "afternoon" | "evening" | "night"
+    """
     from datetime import datetime
     hour = datetime.now().time().hour
 
@@ -52,10 +56,11 @@ def get_time_of_day() -> str:
         return "night"
     elif 4 <= hour <= 12:
         return "morning"
-    elif 12 < hour <= 16:
-        return "day"
+    elif 12 < hour <= 17:
+        return "afternoon"
     else:
         return "evening"
+
 
 def parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> float | None:
     """
@@ -110,6 +115,9 @@ class Shell(cmd.Cmd):
         self.decimal = ","
 
     def do_separator(self, sep):
+        """
+        Set a new integer separator or see the current one (if nothing passed)
+        """
         if len(sep) == 0:
             print(f"Current separators: '{self.separator}' and '_' ")
         elif len(sep) == 1:
@@ -120,6 +128,9 @@ class Shell(cmd.Cmd):
                   f"nothing in order to view the current separator")
 
     def do_decimal(self, dec):
+        """
+        Set a new decimal separator or see the current one (if nothing passed)
+        """
         if len(dec) == 0:
             print(f"Current separator: {self.decimal}")
         elif len(dec) == 1:
@@ -146,6 +157,9 @@ class Shell(cmd.Cmd):
         print("-> " + currency_speller(num, num_names=NUM_NAMES, power_names=POWER_NAMES))
 
     def do_exit(self, *args):
+        """
+        Exit the script
+        """
         return 1
 
 

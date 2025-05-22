@@ -172,7 +172,8 @@ class CurrencySpellerTests(unittest.TestCase):
             123.14: "One hundred twenty-three dollars and fourteen cents",
             123.01: "One hundred twenty-three dollars and one cent",
             123.1001: "One hundred twenty-three dollars and ten cents",
-            499.999: "Five hundred dollars"
+            499.999: "Five hundred dollars",
+            520.998: "Five hundred twenty-one dollars"
         }
         for num, expected in predefined_inputs.items():
             self.assertEqual(expected, currency_speller(num, power_names=POWER_NAMES, num_names=NUM_NAMES))
