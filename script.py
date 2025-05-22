@@ -1,9 +1,12 @@
 from typing import Dict, List, Iterable, Tuple
 
 
-# OPTIONAL
-# add the test coverage badge
+# TODO
+# test all the app
 # build a CI pipeline with the tests
+# add both badges onto the github page
+
+# OPTIONAL
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
 
 
@@ -99,7 +102,10 @@ def currency_speller(
     if not isinstance(capitalize, bool):
         raise TypeError(f"Keyword capitalize must be a boolean value, got {type(capitalize)}")
 
-    integer, decimal = split_decimal(number)
+    if number != round(number,2):
+        print(f"The the max number of decimal points exceeded. Rounding to the 2 decimal points. {number=}")
+
+    integer, decimal = split_decimal(round(number,2))
 
     decimal = abs(decimal)
     if decimal != round(decimal, 2):

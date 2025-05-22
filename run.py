@@ -138,7 +138,7 @@ class Shell(cmd.Cmd):
         """
         from script import currency_speller
 
-        num = parse_num(_num, separator=self.separator, decimal=self.decimal)
+        num: float | None = parse_num(_num, separator=self.separator, decimal=self.decimal)
         if not num:
             print("Invalid input.")
             return
