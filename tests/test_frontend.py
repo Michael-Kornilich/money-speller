@@ -1,19 +1,19 @@
+import pytest
 from random import randint
 from scripts.app import *
 from scripts.script import split_decimal
 
 
-class ApplicationParserTests:
-
+class TestApplicationParser:
     def test_underscores(self):
         expected = 1234
         got = parse_num("1_2_3_4$")
-        self.assertEqual(expected, got)
+        assert expected == got
 
     def test_leading_0s(self):
         expected = 1234
         got = parse_num("0001234$")
-        self.assertEqual(expected, got)
+        assert expected == got
 
     def test_bad_input(self):
         bad_inputs = [
@@ -33,13 +33,13 @@ class ApplicationParserTests:
         ]
 
         for inp in bad_inputs:
-            self.assertEqual(None, parse_num(inp))
+            assert None == parse_num(inp)
 
     def test_bad_random_input(self):
         for _ in range(10_000):
             chars = "".join(chr(randint(0, 1_114_111)) for i in range(10))
             if not chars.isnumeric():
-                self.assertEqual(None, parse_num(chars))
+                assert None == parse_num(chars)
 
     def test_splitter(self):
         inputs = {
@@ -52,18 +52,17 @@ class ApplicationParserTests:
         }
 
         for inp, exp in inputs.items():
-            self.assertEqual(exp, split_decimal(inp))
+            assert exp == split_decimal(inp)
 
 
-class ApplicationSeparatorsTests:
+class TestApplicationSeparators:
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.shell = Shell()
         cls.integer_sep = cls.shell.integer_sep
         cls.decimal_sep = cls.shell.decimal_sep
 
-    @patch("builtins.print")
-    def test_decimal_bad_input(self, mock_print):
+    def test_decimal_bad_input(self, capsys):
         bad_inputs = [
             "hello",
             "six"
@@ -78,12 +77,11 @@ class ApplicationSeparatorsTests:
 
         for val in bad_inputs:
             self.shell.do_decimal(val)
-            mock_print.assert_called_with(
-                f"Invalid decimal separator '{val}'.\n"
-                f"The available decimal separators are: {" ".join(self.shell.available_sep)}")
+            captured = capsys.readouterr()
+            assert captured == (f"Invalid decimal separator '{val}'.\n"
+                                f"The available decimal separators are: {" ".join(self.shell.available_sep)}")
 
-    @patch("builtins.print")
-    def test_decimal_special(self, mock_print):
+    def test_decimal_special(self, capsys):
         io = {
             self.integer_sep: "Switched the separators around.\n"
                               f"New decimal separator: {self.integer_sep}\n"
@@ -91,10 +89,11 @@ class ApplicationSeparatorsTests:
         }
         for dec, err_msg in io.items():
             self.shell.do_decimal(dec)
-            mock_print.assert_called_with(err_msg)
 
-    @patch("builtins.print")
-    def test_separator(self, mock_print):
+            captured = capsys.readouterr()
+            assert captured == err_msg
+
+    def test_separator(self, capsys):
         bad_inputs = [
             "hello",
             "5",
@@ -110,17 +109,17 @@ class ApplicationSeparatorsTests:
 
         for val in bad_inputs:
             self.shell.do_separator(val)
-            mock_print.assert_called_with(
-                f"Invalid integer separator '{val}'.\n"
-                f"The available integer separators are: {" ".join(self.shell.available_sep)}")
+            captured = capsys.readouterr()
+            assert captured == (f"Invalid integer separator '{val}'.\n"
+                                f"The available integer separators are: {" ".join(self.shell.available_sep)}")
 
-    @patch("builtins.print")
-    def test_separator_special(self, mock_print):
+    def test_separator_special(self, capsys):
         io = {
             self.decimal_sep: "Switched the separators around.\n"
                               f"New decimal separator: {self.integer_sep}\n"
                               f"New integer separator: {self.decimal_sep}",
         }
-        for dec, err_msg in io.items():
+        for dec, msg in io.items():
             self.shell.do_decimal(dec)
-            mock_print.assert_called_with(err_msg)
+            captured = capsys.readouterr()
+            assert captured == msg

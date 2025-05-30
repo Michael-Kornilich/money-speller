@@ -4,28 +4,28 @@ from scripts.script import *
 from scripts.app import POWER_NAMES, NUM_NAMES
 
 
-class NumberBreakerTests:
+class TestNumberBreaker:
     # num testing
     def test_float(self):
-        self.assertRaises(ValueError, break_down, num=123.123, power_step=3)
+        with pytest.raises(ValueError): break_down(num=123.123, power_step=3)
 
     def test_type_list(self):
-        self.assertRaises(TypeError, break_down, num=[123], power_step=3)
+        with pytest.raises(TypeError): break_down(num=[123], power_step=3)
 
     def test_type_float(self):
         assert {0: 123} == break_down(num=123.000, power_step=3)
 
     def test_empty(self):
-        self.assertRaises(TypeError, break_down, num=None, power_step=3)
+        with pytest.raises(TypeError): break_down(num=None, power_step=3)
 
     def test_negative(self):
-        self.assertRaises(ValueError, break_down, num=-123, power_step=3)
+        with pytest.raises(ValueError): break_down(num=-123, power_step=3)
 
     def test_zero(self):
         assert {0: 0} == break_down(num=0, power_step=3)
 
     def test_string(self):
-        self.assertRaises(TypeError, break_down, num="123456", power_step=3)
+        with pytest.raises(TypeError): break_down(num="123456", power_step=3)
 
     def test_random_num(self):
         for i in range(10_000):
@@ -40,19 +40,19 @@ class NumberBreakerTests:
 
     # power_step testing
     def test_float_power_step(self):
-        self.assertRaises(TypeError, break_down, num=123, power_step=3.1)
+        with pytest.raises(TypeError): break_down(num=123, power_step=3.1)
 
     def test_list_power_step(self):
-        self.assertRaises(TypeError, break_down, num=123, power_step=[3.1])
+        with pytest.raises(TypeError): break_down(num=123, power_step=[3.1])
 
     def test_negative_power_step(self):
-        self.assertRaises(ValueError, break_down, num=123, power_step=-3)
+        with pytest.raises(TypeError): break_down(num=123, power_step=[3.1])
 
     def test_zero_power_step(self):
-        self.assertRaises(ValueError, break_down, num=123, power_step=0)
+        with pytest.raises(ValueError): break_down(num=123, power_step=0)
 
     def test_string_power_step(self):
-        self.assertRaises(TypeError, break_down, num=123, power_step="3")
+        with pytest.raises(TypeError): break_down(num=123, power_step="3")
 
     def test_random_power_step(self):
         for i in range(10_000):
@@ -79,7 +79,7 @@ class NumberBreakerTests:
             assert num == got
 
 
-class BatchTests:
+class TestBatch:
     def test_batched_backwards(self):
         iterables = {
             "hello world": [tuple("rld"), tuple(" wo"), tuple("llo"), tuple("he")],
@@ -88,8 +88,7 @@ class BatchTests:
         n = 3
         for inp, expected in iterables.items():
             got = list(batched(inp, n, backwards=True))
-
-        self.assertListEqual(expected, got)
+            assert list(expected) == list(got)
 
     def test_batched(self):
         iterables = {
@@ -99,7 +98,7 @@ class BatchTests:
         n = 3
         for inp, expected in iterables.items():
             got = list(batched(inp, n, backwards=False))
-            self.assertListEqual(expected, got)
+            assert list(expected) == list(got)
 
     def test_batched_edge(self):
         iterables = {
@@ -109,10 +108,10 @@ class BatchTests:
         n = 3
         for inp, expected in iterables.items():
             got = list(batched(inp, n, backwards=False))
-            self.assertListEqual(expected, got)
+            assert list(expected) == list(got)
 
 
-class AssemblerTests:
+class TestAssembler:
     def test_assembler_edge(self):
         iterables = [
             [{0: 0}, 0],
@@ -135,16 +134,16 @@ class AssemblerTests:
             assert num == got
 
     def test_bad_assembler_input(self):
-        self.assertRaises(ValueError, assemble, {})
-        self.assertRaises(TypeError, assemble, "hello")
+        with pytest.raises(ValueError): assemble({})
+        with pytest.raises(TypeError): assemble("hello")
 
 
-class CurrencySpellerTests:
+class TestCurrencySpeller:
     def test_string_type(self):
-        self.assertRaises(TypeError, currency_speller, num="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
+        with pytest.raises(TypeError): currency_speller(number="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
 
     def test_list_type(self):
-        self.assertRaises(TypeError, currency_speller, num=[123456], power_names=POWER_NAMES, num_names=NUM_NAMES)
+        with pytest.raises(TypeError): currency_speller(number=[123456], power_names=POWER_NAMES, num_names=NUM_NAMES)
 
     def test_predefined_int(self):
         predefined_inputs = {
