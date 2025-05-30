@@ -1,5 +1,7 @@
 # Money Speller
 
+[![codecov](https://codecov.io/gh/Michael-Kornilich/money-speller/graph/badge.svg?token=GHVEBIHVUL)](https://codecov.io/gh/Michael-Kornilich/money-speller)
+
 Description
 ---
 This script is able to spell all dollar amounts of money between -10<sup>27</sup> and 10<sup>27</sup> (ends excluded)\
