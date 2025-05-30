@@ -1,6 +1,9 @@
 from random import randint
+from scripts.app import *
+from scripts.script import split_decimal
 
-class ApplicationParserTests():
+
+class ApplicationParserTests:
 
     def test_underscores(self):
         expected = 1234
@@ -52,7 +55,7 @@ class ApplicationParserTests():
             self.assertEqual(exp, split_decimal(inp))
 
 
-class ApplicationSeparatorsTests(unittest.TestCase):
+class ApplicationSeparatorsTests:
     @classmethod
     def setUpClass(cls):
         cls.shell = Shell()

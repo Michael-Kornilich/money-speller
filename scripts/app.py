@@ -95,10 +95,10 @@ class Shell(cmd.Cmd):
     This script spells every money amount between -10^27 and 10^27 (ends excluded).
 
     \033[94mAvailable functions\033[0m:
-    
+
         -\033[92m spell <amount>\033[0m: 
             Spell the <amount> of money
-        
+
         -\033[92m separator [<new-separator>]\033[0m: 
             Define a separator, which is used to split the whole parts of the numbers.
             If nothing passed show the current separator.
@@ -106,7 +106,7 @@ class Shell(cmd.Cmd):
                 {sep_list}   
             The default separator is "."
             The separator is not strictly enforced, so calling ..$...1....4 will work the same as calling $14.
-            
+
         -\033[92m decimal [<new-decimal-separator>]\033[0m: 
             Define a decimal separator.
             The available separators are as follow:
@@ -116,7 +116,7 @@ class Shell(cmd.Cmd):
             The decimal separator is used to split the integer from its decimal part. 
             It is STRICTLY enforced and the spelling will fail
             if the decimal separator is found in the target number more than once.
-            
+
         -\033[92m exit\033[0m: 
             Exits the script
     """.format(time=get_time_of_day(), sep_list=" ".join(available_sep))
@@ -171,7 +171,7 @@ class Shell(cmd.Cmd):
         Money amounts with more than 2 decimals will be rounded to 2 decimals
         To simplify the input, the usage of "_" and the defined separator is permitted to separate the number.
         """
-        from script import currency_speller
+        from scripts.script import currency_speller
 
         num: float | None = parse_num(_num, separator=self.integer_sep, decimal=self.decimal_sep)
         if not num:
@@ -185,7 +185,3 @@ class Shell(cmd.Cmd):
         Exit the script
         """
         return 1
-
-
-if __name__ == "__main__":
-    Shell().cmdloop()

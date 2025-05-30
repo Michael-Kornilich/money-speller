@@ -1,8 +1,10 @@
 import pytest
 from random import randint
+from scripts.script import *
+from scripts.app import POWER_NAMES, NUM_NAMES
 
 
-class NumberBreakerTests():
+class NumberBreakerTests:
     # num testing
     def test_float(self):
         self.assertRaises(ValueError, break_down, num=123.123, power_step=3)
@@ -77,7 +79,7 @@ class NumberBreakerTests():
             assert num == got
 
 
-class BatchTests(unittest.TestCase):
+class BatchTests:
     def test_batched_backwards(self):
         iterables = {
             "hello world": [tuple("rld"), tuple(" wo"), tuple("llo"), tuple("he")],
@@ -110,7 +112,7 @@ class BatchTests(unittest.TestCase):
             self.assertListEqual(expected, got)
 
 
-class AssemblerTests(unittest.TestCase):
+class AssemblerTests:
     def test_assembler_edge(self):
         iterables = [
             [{0: 0}, 0],
@@ -137,7 +139,7 @@ class AssemblerTests(unittest.TestCase):
         self.assertRaises(TypeError, assemble, "hello")
 
 
-class CurrencySpellerTests(unittest.TestCase):
+class CurrencySpellerTests:
     def test_string_type(self):
         self.assertRaises(TypeError, currency_speller, num="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
 
