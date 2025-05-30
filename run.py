@@ -1,8 +1,8 @@
 import cmd
-from typing import Dict
+from typing import Dict, Literal
 
 NUM_NAMES: Dict[int, str] = {
-    # 0: '',
+    # 0: 'zero',
     1: 'one',
     2: 'two',
     3: 'three',
@@ -82,11 +82,12 @@ def parse_num(str_: str, /, *, separator: str = ",", decimal: str = ".") -> floa
 
 
 class Shell(cmd.Cmd):
+    available_sep = [',', '.', '-', '–', '_', '&', '/', ':', '|']
+
     def __init__(self):
         super().__init__()
-        self.available_sep = [',', '.', '-', '–', '_', '&', '/', ':', '|']
-        self.separator = "."
-        self.decimal = ","
+        self.integer_sep = "."
+        self.decimal_sep = ","
 
     prompt = "> "
     intro = """
@@ -118,48 +119,50 @@ class Shell(cmd.Cmd):
             
         -\033[92m exit\033[0m: 
             Exits the script
-    """.format(time=get_time_of_day(), sep_list=" ".join([',', '.', '-', '–', '_', '&', '/', ':', '|']))
+    """.format(time=get_time_of_day(), sep_list=" ".join(available_sep))
+
+    def _change_separator(self, new_sep: str, _tp: Literal["decimal", "integer"]):
+        if _tp not in ["decimal", "integer"]:
+            raise ValueError("The type (tp) must be either 'integer' or 'decimal'."
+                             f"Given '{_tp}'.")
+
+        tp = _tp + "_sep"
+
+        if not new_sep:
+            print(f"Current {_tp} separator: '{self.__getattribute__(tp)}'")
+            return
+
+        if new_sep not in self.available_sep:
+            print(f"Invalid integer separator '{new_sep}'.\n"
+                  f"The available {_tp} separators are: {" ".join(self.available_sep)}")
+            return
+
+        disjunct_type = {"integer_sep": "decimal_sep", "decimal_sep": "integer_sep"}[tp]
+        if new_sep == self.__getattribute__(disjunct_type):
+            # Set the disjunct type to the current separator
+            self.__setattr__(disjunct_type, self.__getattribute__(tp))
+
+            # set the current separator to the new separator
+            self.__setattr__(tp, new_sep)
+            print("Switched the separators around.\n"
+                  f"New decimal separator: {self.decimal_sep}\n"
+                  f"New integer separator: {self.integer_sep}")
+            return
+
+        self.__setattr__(tp, new_sep)
+        print(f"Changed the {_tp} separator to: {new_sep}")
 
     def do_separator(self, sep: str):
         """
         Set a new integer separator or see the current one (if nothing passed)
         """
-        if not sep:
-            print(f"Current integer separator: '{self.separator}'")
-            return
-
-        if sep not in self.available_sep:
-            print(f"Invalid integer separator '{sep}'.\n"
-                  f"The available integer separators are: {" ".join(self.available_sep)}")
-            return
-        if sep == self.decimal:
-            print(f"Invalid integer separator '{sep}'. The integer and the decimal separators cannot be same.")
-            return
-
-        self.separator = sep
-        print(f"Changed separator to: {sep}")
+        self._change_separator(new_sep=sep, _tp="integer")
 
     def do_decimal(self, dec: str):
         """
         Set a new decimal separator or see the current one (if nothing passed)
         """
-        if not dec:
-            print(f"Current decimal separator: '{self.decimal}'")
-            return
-
-        if dec not in self.available_sep:
-            print(f"Invalid decimal separator '{dec}'.\n"
-                  f"The available decimal separators are: {" ".join(self.available_sep)}")
-            return
-        if dec == self.separator:
-            print(f"Invalid decimal separator '{dec}'. The decimal and the integer separators cannot be same.")
-            return
-
-        if len(dec) == 0:
-            print(f"Current separator: {self.decimal}")
-        elif len(dec) == 1:
-            self.decimal = dec
-            print(f"Changed separator to: {dec}")
+        self._change_separator(new_sep=dec, _tp="decimal")
 
     def do_spell(self, _num: str):
         """
@@ -170,7 +173,7 @@ class Shell(cmd.Cmd):
         """
         from script import currency_speller
 
-        num: float | None = parse_num(_num, separator=self.separator, decimal=self.decimal)
+        num: float | None = parse_num(_num, separator=self.integer_sep, decimal=self.decimal_sep)
         if not num:
             print("Invalid input.")
             return

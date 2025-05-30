@@ -2,6 +2,7 @@ from typing import Dict, List, Iterable, Tuple
 
 
 # TODO
+# make the separator and decimal auto change, insdead of an error
 # build a CI pipeline with the tests
 # add both badges onto the github page
 
