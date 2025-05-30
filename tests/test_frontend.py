@@ -1,4 +1,3 @@
-import pytest
 from random import randint
 from scripts.app import *
 from scripts.script import split_decimal
@@ -59,8 +58,6 @@ class TestApplicationSeparators:
     @classmethod
     def setup_class(cls):
         cls.shell = Shell()
-        cls.integer_sep = cls.shell.integer_sep
-        cls.decimal_sep = cls.shell.decimal_sep
 
     def test_decimal_bad_input(self, capsys):
         bad_inputs = [
@@ -77,21 +74,22 @@ class TestApplicationSeparators:
 
         for val in bad_inputs:
             self.shell.do_decimal(val)
+
             captured = capsys.readouterr()
-            assert captured == (f"Invalid decimal separator '{val}'.\n"
-                                f"The available decimal separators are: {" ".join(self.shell.available_sep)}")
+            assert captured.out == (f"Invalid decimal separator '{val}'.\n"
+                                    f"The available decimal separators are: {" ".join(self.shell.available_sep)}\n")
 
     def test_decimal_special(self, capsys):
         io = {
-            self.integer_sep: "Switched the separators around.\n"
-                              f"New decimal separator: {self.integer_sep}\n"
-                              f"New integer separator: {self.decimal_sep}",
+            self.shell.integer_sep: "Switched the separators around.\n"
+                                    f"New decimal separator: {self.shell.integer_sep}\n"
+                                    f"New integer separator: {self.shell.decimal_sep}\n",
         }
         for dec, err_msg in io.items():
             self.shell.do_decimal(dec)
 
             captured = capsys.readouterr()
-            assert captured == err_msg
+            assert captured.out == err_msg
 
     def test_separator(self, capsys):
         bad_inputs = [
@@ -110,16 +108,40 @@ class TestApplicationSeparators:
         for val in bad_inputs:
             self.shell.do_separator(val)
             captured = capsys.readouterr()
-            assert captured == (f"Invalid integer separator '{val}'.\n"
-                                f"The available integer separators are: {" ".join(self.shell.available_sep)}")
+            assert captured.out == (f"Invalid integer separator '{val}'.\n"
+                                    f"The available integer separators are: {" ".join(self.shell.available_sep)}\n")
 
     def test_separator_special(self, capsys):
         io = {
-            self.decimal_sep: "Switched the separators around.\n"
-                              f"New decimal separator: {self.integer_sep}\n"
-                              f"New integer separator: {self.decimal_sep}",
+            self.shell.decimal_sep: "Switched the separators around.\n"
+                                    f"New decimal separator: {self.shell.integer_sep}\n"
+                                    f"New integer separator: {self.shell.decimal_sep}\n",
         }
         for dec, msg in io.items():
-            self.shell.do_decimal(dec)
+            self.shell.do_separator(dec)
             captured = capsys.readouterr()
-            assert captured == msg
+            assert captured.out == msg
+
+
+class TestApplicationSpeller:
+    @classmethod
+    def setup_class(cls):
+        cls.shell = Shell()
+
+    def test_bad_inputs(self, capsys):
+        bad_inputs = [
+            "123",
+            "hello",
+            "\n",
+            "\t",
+            "√å‚∂«∑€",
+            "123g$",
+            "-123d$",
+            "",
+            "-\321$",
+            "Minus 123$",
+        ]
+        for val in bad_inputs:
+            self.shell.do_spell(val)
+            captured = capsys.readouterr()
+            assert captured.out == "Invalid input.\n"

@@ -133,7 +133,7 @@ class Shell(cmd.Cmd):
             return
 
         if new_sep not in self.available_sep:
-            print(f"Invalid integer separator '{new_sep}'.\n"
+            print(f"Invalid {_tp} separator '{new_sep}'.\n"
                   f"The available {_tp} separators are: {" ".join(self.available_sep)}")
             return
 
@@ -158,11 +158,11 @@ class Shell(cmd.Cmd):
         """
         self._change_separator(new_sep=sep, _tp="integer")
 
-    def do_decimal(self, dec: str):
+    def do_decimal(self, sep: str):
         """
         Set a new decimal separator or see the current one (if nothing passed)
         """
-        self._change_separator(new_sep=dec, _tp="decimal")
+        self._change_separator(new_sep=sep, _tp="decimal")
 
     def do_spell(self, _num: str):
         """

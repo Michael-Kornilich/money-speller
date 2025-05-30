@@ -144,4 +144,4 @@ cython_debug/
 
 # Custom
 experiments.ipynb
-
+log.txt
