@@ -1,4 +1,7 @@
 from random import randint
+
+import pytest
+
 from scripts.app import *
 from scripts.script import split_decimal
 
@@ -145,3 +148,31 @@ class TestApplicationSpeller:
             self.shell.do_spell(val)
             captured = capsys.readouterr()
             assert captured.out == "Invalid input.\n"
+
+
+class TestSeparatorChanger:
+    @classmethod
+    def setup_class(cls):
+        cls.shell = Shell()
+    # to be continued...
+
+
+class TestMiscellaneous:
+    @classmethod
+    def setup_class(cls):
+        cls.shell = Shell()
+
+    def test_exit(self):
+        for _ in range(100):
+            assert 1 == self.shell.do_exit(randint(-100, 100))
+
+    def test_get_datetime(self):
+        bad_inp = [
+            "hello",
+            "",
+            "123",
+            "\n",
+            None
+        ]
+        for val in bad_inp:
+            with pytest.raises(TypeError): get_time_of_day(val)
