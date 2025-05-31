@@ -153,6 +153,14 @@ class TestAssembler:
 
 
 class TestCurrencySpeller:
+    def test_bad_capitalize_kw(self):
+        with pytest.raises(TypeError):
+            currency_speller(number=12345, capitalize="hello", power_names=POWER_NAMES, num_names=NUM_NAMES)
+
+    def test_too_big_number(self):
+        with pytest.raises(ValueError):
+            currency_speller(number=10 ** 28, power_names=POWER_NAMES, num_names=NUM_NAMES)
+
     def test_string_type(self):
         with pytest.raises(TypeError): currency_speller(number="123456", power_names=POWER_NAMES, num_names=NUM_NAMES)
 
