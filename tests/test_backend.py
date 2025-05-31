@@ -110,6 +110,20 @@ class TestBatch:
             got = list(batched(inp, n, backwards=False))
             assert list(expected) == list(got)
 
+    def test_batch_bad_iterable(self):
+        with pytest.raises(TypeError): batched(345, 1)
+
+    def test_batch_bad_n(self):
+        with pytest.raises(ValueError): batched("hello", -1)
+        with pytest.raises(TypeError): batched("hello", 1.3)
+
+    def test_batch_bad_backwards_kw(self):
+        with pytest.raises(TypeError): batched("hello", 1, backwards="true")
+
+    def test_batch_bad_strict_kw(self):
+        with pytest.raises(TypeError): batched("hello", 1, strict="true")
+        with pytest.raises(ValueError): batched("hello", 3, strict=True)
+
 
 class TestAssembler:
     def test_assembler_edge(self):

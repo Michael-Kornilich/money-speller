@@ -121,7 +121,7 @@ class Shell(cmd.Cmd):
             Exits the script
     """.format(time=get_time_of_day(), sep_list=" ".join(available_sep))
 
-    def _change_separator(self, new_sep: str, _tp: Literal["decimal", "integer"]):
+    def _change_separator(self, new_sep: str, _tp: Literal["decimal", "integer"]) -> str:
         if _tp not in ["decimal", "integer"]:
             raise ValueError("The type (tp) must be either 'integer' or 'decimal'."
                              f"Given '{_tp}'.")
@@ -129,13 +129,11 @@ class Shell(cmd.Cmd):
         tp = _tp + "_sep"
 
         if not new_sep:
-            print(f"Current {_tp} separator: '{self.__getattribute__(tp)}'")
-            return
+            return f"Current {_tp} separator: '{self.__getattribute__(tp)}'"
 
         if new_sep not in self.available_sep:
-            print(f"Invalid {_tp} separator '{new_sep}'.\n"
-                  f"The available {_tp} separators are: {" ".join(self.available_sep)}")
-            return
+            return (f"Invalid {_tp} separator '{new_sep}'.\n"
+                    f"The available {_tp} separators are: {" ".join(self.available_sep)}")
 
         disjunct_type = {"integer_sep": "decimal_sep", "decimal_sep": "integer_sep"}[tp]
         if new_sep == self.__getattribute__(disjunct_type):
@@ -144,25 +142,24 @@ class Shell(cmd.Cmd):
 
             # set the current separator to the new separator
             self.__setattr__(tp, new_sep)
-            print("Switched the separators around.\n"
-                  f"New decimal separator: {self.decimal_sep}\n"
-                  f"New integer separator: {self.integer_sep}")
-            return
+            return ("Switched the separators around.\n"
+                    f"New decimal separator: {self.decimal_sep}\n"
+                    f"New integer separator: {self.integer_sep}")
 
         self.__setattr__(tp, new_sep)
-        print(f"Changed the {_tp} separator to: {new_sep}")
+        return f"Changed the {_tp} separator to: {new_sep}"
 
     def do_separator(self, sep: str):
         """
         Set a new integer separator or see the current one (if nothing passed)
         """
-        self._change_separator(new_sep=sep, _tp="integer")
+        print(self._change_separator(new_sep=sep, _tp="integer"))
 
     def do_decimal(self, sep: str):
         """
         Set a new decimal separator or see the current one (if nothing passed)
         """
-        self._change_separator(new_sep=sep, _tp="decimal")
+        print(self._change_separator(new_sep=sep, _tp="decimal"))
 
     def do_spell(self, _num: str):
         """

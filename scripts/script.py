@@ -2,8 +2,7 @@ from typing import Dict, List, Iterable, Tuple
 
 
 # TODO
-# build a CI pipeline with the tests
-# add both badges onto the github page
+# build a CI pipeline with the badge
 
 # OPTIONAL
 # reduce the dependency on the NUM_NAMES and POWER_NAMES
@@ -22,22 +21,36 @@ def batched(iterable: Iterable, n: int, *, strict: bool = False, backwards: bool
     :param backwards: Whether to iterate the object starting from the back
     :return: Tuple of the batch
     """
-    from itertools import islice
+    if not hasattr(iterable, "__iter__"): raise TypeError("The iterable must have the __iter__ magic method defined.")
 
+    if not isinstance(n, int): raise TypeError(f'n must be a positive integer, got {type(n)}')
     if n < 1: raise ValueError(f'n must be at least one, got {n}')
+
+    if not isinstance(strict, bool):
+        raise TypeError(f"Keyword backwards must be a boolean value, got {type(strict)}")
+    if strict and len(list(iterable)) % n != 0:
+        raise ValueError('strict=True, cannot divide iterable into batched')
+
     if not isinstance(backwards, bool):
-        raise TypeError(f"Keyword backwards must be a boolan value, got {type(backwards)}")
+        raise TypeError(f"Keyword backwards must be a boolean value, got {type(backwards)}")
 
-    iterator = iter(iterable[::-1]) if backwards else iter(iterable)
+    # why: as soon as python sees "yield" keyword in a function,
+    # it automatically returns a generator object without running line that precede the yield kw
+    # so a generator wrapper is need to run the guard clauses AND return the generator object
+    def _generator_obj_wrapper(*, iterable, n, strict, backwards):
+        from itertools import islice
+        iterator = iter(iterable[::-1]) if backwards else iter(iterable)
 
-    while batch := tuple(islice(iterator, n)):
-        if strict and len(batch) != n:
-            raise ValueError('batched(): strict=True, incomplete batch')
+        while batch := tuple(islice(iterator, n)):
+            if strict and len(batch) != n:
+                raise ValueError('strict=True, incomplete last batch')
 
-        if backwards:
-            yield batch[::-1]
-        else:
-            yield batch
+            if backwards:
+                yield batch[::-1]
+            else:
+                yield batch
+
+    return _generator_obj_wrapper(iterable=iterable, n=n, strict=strict, backwards=backwards)
 
 
 def break_down(num: int, power_step: int) -> Dict[int, int]:

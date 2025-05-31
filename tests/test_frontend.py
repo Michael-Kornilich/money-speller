@@ -1,7 +1,5 @@
 from random import randint
-
 import pytest
-
 from scripts.app import *
 from scripts.script import split_decimal
 
@@ -18,7 +16,7 @@ class TestApplicationParser:
         assert expected == got
 
     def test_bad_input(self):
-        bad_inputs = [
+        bad_inputs = (
             "a123b$",
             "abc$",
             "1-1235-123&$",
@@ -32,7 +30,7 @@ class TestApplicationParser:
             "/12345$",
             "-",
             "√asdg"
-        ]
+        )
 
         for inp in bad_inputs:
             assert None == parse_num(inp)
@@ -95,7 +93,7 @@ class TestApplicationSeparators:
             assert captured.out == err_msg
 
     def test_separator(self, capsys):
-        bad_inputs = [
+        bad_inputs = (
             "hello",
             "5",
             "9"
@@ -106,7 +104,7 @@ class TestApplicationSeparators:
             "        "
             "\n",
             "\r"
-        ]
+        )
 
         for val in bad_inputs:
             self.shell.do_separator(val)
@@ -132,7 +130,7 @@ class TestApplicationSpeller:
         cls.shell = Shell()
 
     def test_bad_inputs(self, capsys):
-        bad_inputs = [
+        bad_inputs = (
             "123",
             "hello",
             "\n",
@@ -143,7 +141,7 @@ class TestApplicationSpeller:
             "",
             "-\321$",
             "Minus 123$",
-        ]
+        )
         for val in bad_inputs:
             self.shell.do_spell(val)
             captured = capsys.readouterr()
@@ -154,7 +152,86 @@ class TestSeparatorChanger:
     @classmethod
     def setup_class(cls):
         cls.shell = Shell()
-    # to be continued...
+
+    def teardown_sep(self):
+        self.shell.integer_sep = "."
+        self.shell.decimal_sep = ","
+
+    def test_simple_decimal_change(self):
+        for inp in self.shell.available_sep:
+            self.shell._change_separator(new_sep=inp, _tp="decimal")
+            assert self.shell.decimal_sep == inp
+        self.teardown_sep()
+
+    def test_simple_integer_change(self):
+        for inp in self.shell.available_sep:
+            self.shell._change_separator(new_sep=inp, _tp="integer")
+            assert self.shell.integer_sep == inp
+        self.teardown_sep()
+
+    def test_switch_integer(self):
+        self.shell._change_separator(
+            new_sep=self.shell.decimal_sep,
+            _tp="integer")
+
+        assert self.shell.integer_sep == ","
+        assert self.shell.decimal_sep == "."
+        self.teardown_sep()
+
+    def test_switch_decimal(self):
+        self.shell._change_separator(
+            new_sep=self.shell.integer_sep,
+            _tp="decimal")
+
+        assert self.shell.integer_sep == ","
+        assert self.shell.decimal_sep == "."
+        self.teardown_sep()
+
+    def test_empty_integer_sep(self):
+        got = self.shell._change_separator(new_sep="", _tp="integer")
+        assert f"Current integer separator: '{self.shell.integer_sep}'" == got
+        self.teardown_sep()
+
+    def test_empty_decimal_sep(self):
+        got = self.shell._change_separator(new_sep="", _tp="decimal")
+        assert f"Current decimal separator: '{self.shell.decimal_sep}'" == got
+        self.teardown_sep()
+
+    def test_invalid_integer_sep(self):
+        bad_seps = (
+            "hello",
+            "1",
+            "...",
+            ",.,.",
+            "\n",
+            ",5",
+            "0",
+            "\\",
+            "\t"
+        )
+        for val in bad_seps:
+            got = self.shell._change_separator(new_sep=val, _tp="integer")
+            assert got == (f"Invalid integer separator '{val}'.\n"
+                           f"The available integer separators are: {" ".join(self.shell.available_sep)}")
+        self.teardown_sep()
+
+    def test_invalid_decimal_sep(self):
+        bad_seps = (
+            "hello",
+            "1",
+            "...",
+            ",.,.",
+            "\n",
+            ",5",
+            "0",
+            "\\",
+            "\t"
+        )
+        for val in bad_seps:
+            got = self.shell._change_separator(new_sep=val, _tp="decimal")
+            assert got == (f"Invalid decimal separator '{val}'.\n"
+                           f"The available decimal separators are: {" ".join(self.shell.available_sep)}")
+        self.teardown_sep()
 
 
 class TestMiscellaneous:
