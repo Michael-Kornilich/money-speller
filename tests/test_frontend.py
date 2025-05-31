@@ -147,6 +147,22 @@ class TestApplicationSpeller:
             captured = capsys.readouterr()
             assert captured.out == "Invalid input.\n"
 
+    def test_random_inputs(self, capsys):
+        io = {
+            "-1$": "-> Minus one dollar\n",
+            "14$": "-> Fourteen dollars\n",
+            "$-12": "-> Minus twelve dollars\n",
+            "345.001.000$": "-> Three hundred forty-five million one thousand dollars\n",
+            "$1.000.001": "-> One million one dollars\n",
+            "$901.001.437.010": "-> Nine hundred one billion one million four hundred thirty-seven thousand ten dollars\n",
+            "-123.123$": "-> Minus one hundred twenty-three thousand one hundred twenty-three dollars\n",
+            "$12.000.013": "-> Twelve million thirteen dollars\n",
+        }
+        for i, o in io.items():
+            self.shell.do_spell(i)
+            got = capsys.readouterr().out
+            assert o == got
+
 
 class TestSeparatorChanger:
     @classmethod
@@ -156,6 +172,10 @@ class TestSeparatorChanger:
     def teardown_sep(self):
         self.shell.integer_sep = "."
         self.shell.decimal_sep = ","
+
+    def test_bad_inputs(self):
+        with pytest.raises(ValueError): self.shell._change_separator(new_sep=",", _tp="hello")
+        self.teardown_sep()
 
     def test_simple_decimal_change(self):
         for inp in self.shell.available_sep:
