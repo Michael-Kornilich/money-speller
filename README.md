@@ -1,6 +1,7 @@
 # Money Speller
 
 [![codecov](https://codecov.io/gh/Michael-Kornilich/money-speller/graph/badge.svg?token=GHVEBIHVUL)](https://codecov.io/gh/Michael-Kornilich/money-speller)
+[![CI Pipeline](https://github.com/Michael-Kornilich/money-speller/actions/workflows/ci.yml/badge.svg)](https://github.com/Michael-Kornilich/money-speller/actions/workflows/ci.yml)
 
 Description
 ---
